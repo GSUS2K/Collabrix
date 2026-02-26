@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import styles from './AuthPage.module.css';
@@ -8,7 +9,7 @@ export default function AuthPage() {
   const [mode, setMode] = useState('login'); // login | register
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [busy, setBusy] = useState(false);
-  const { login, register } = useAuth();
+  const { login, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
@@ -31,6 +32,18 @@ export default function AuthPage() {
     }
   };
 
+  const onGoogleSuccess = async (credentialResponse) => {
+    setBusy(true);
+    try {
+      await loginWithGoogle(credentialResponse.credential);
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Google login failed');
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div className={styles.page}>
       {/* Ambient orbs */}
@@ -41,9 +54,9 @@ export default function AuthPage() {
       <div className={styles.left}>
         <div className={styles.logoMark}>
           <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-            <rect width="40" height="40" rx="12" fill="#00FFBF" fillOpacity="0.15"/>
-            <path d="M8 20 Q14 10 20 20 Q26 30 32 20" stroke="#00FFBF" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-            <circle cx="20" cy="20" r="3" fill="#00FFBF"/>
+            <rect width="40" height="40" rx="12" fill="#00FFBF" fillOpacity="0.15" />
+            <path d="M8 20 Q14 10 20 20 Q26 30 32 20" stroke="#00FFBF" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <circle cx="20" cy="20" r="3" fill="#00FFBF" />
           </svg>
           <span className={styles.logoText}>Collabrix</span>
         </div>
@@ -85,6 +98,23 @@ export default function AuthPage() {
               className={`${styles.tab} ${mode === 'register' ? styles.tabActive : ''}`}
               onClick={() => setMode('register')}
             >Create Account</button>
+          </div>
+
+          <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin
+              onSuccess={onGoogleSuccess}
+              onError={() => toast.error('Google login failed or was cancelled')}
+              theme="filled_black"
+              size="large"
+              shape="pill"
+              text={mode === 'login' ? "signin_with" : "signup_with"}
+            />
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '24px', color: 'rgba(255,255,255,0.4)', fontSize: '13px' }}>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+            <span style={{ padding: '0 12px' }}>OR EXPLICITLY</span>
+            <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
           </div>
 
           <form className={styles.form} onSubmit={submit}>

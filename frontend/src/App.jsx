@@ -1,10 +1,14 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SocketProvider } from './context/SocketContext';
 import AuthPage from './components/auth/AuthPage';
 import Dashboard from './components/dashboard/Dashboard';
 import Room from './components/whiteboard/Room';
+
+// Use env variable or fallback for development
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_client_id_for_now';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -34,24 +38,26 @@ const AppRoutes = () => (
 
 export default function App() {
   return (
-    <AuthProvider>
-      <HashRouter>
-        <AppRoutes />
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            style: {
-              background: '#18181F',
-              color: '#F0EEF8',
-              border: '1px solid rgba(255,255,255,0.07)',
-              fontSize: '13px',
-              fontFamily: "'Karla', sans-serif",
-            },
-            success: { iconTheme: { primary: '#00FFBF', secondary: '#0C0C0F' } },
-            error: { iconTheme: { primary: '#FF6B6B', secondary: '#0C0C0F' } },
-          }}
-        />
-      </HashRouter>
-    </AuthProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppRoutes />
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: '#18181F',
+                color: '#F0EEF8',
+                border: '1px solid rgba(255,255,255,0.07)',
+                fontSize: '13px',
+                fontFamily: "'Karla', sans-serif",
+              },
+              success: { iconTheme: { primary: '#00FFBF', secondary: '#0C0C0F' } },
+              error: { iconTheme: { primary: '#FF6B6B', secondary: '#0C0C0F' } },
+            }}
+          />
+        </BrowserRouter>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }

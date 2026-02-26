@@ -4,7 +4,7 @@ import api from '../services/api';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]     = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +23,13 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
+  const loginWithGoogle = async (credential) => {
+    const { data } = await api.post('/api/auth/google', { credential });
+    localStorage.setItem('cc_token', data.token);
+    setUser(data.user);
+    return data.user;
+  };
+
   const register = async (username, email, password) => {
     const { data } = await api.post('/api/auth/register', { username, email, password });
     localStorage.setItem('cc_token', data.token);
@@ -36,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, loginWithGoogle, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
