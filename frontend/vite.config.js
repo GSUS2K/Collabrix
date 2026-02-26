@@ -16,6 +16,9 @@ export default defineConfig({
   server: {
     port: 5173,
     allowedHosts: true,
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:5001',
@@ -28,6 +31,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+    },
+  },
+  preview: {
+    headers: {
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     },
   },
 });
