@@ -1,0 +1,144 @@
+.loading {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: var(--text2);
+  font-size: 14px;
+}
+
+/* ── Room layout ─── */
+.room {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Top bar ─── */
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 48px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.topLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.roomName {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.codeChip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--text2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  transition: all 0.15s;
+}
+.codeChip:hover { border-color: var(--border-hi); color: var(--teal); }
+
+.connDot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.connOk  { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+.connErr { background: var(--coral); box-shadow: 0 0 6px var(--coral); animation: blink 1s infinite; }
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+.topCenter {
+  flex: 0;
+  display: flex;
+  align-items: center;
+}
+
+.topRight {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+/* ── User avatars ─── */
+.avatarStack {
+  display: flex;
+}
+
+.miniAvatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #0C0C0F;
+  font-family: var(--font-display);
+  border: 2px solid var(--bg2);
+  margin-left: -6px;
+  transition: transform 0.15s;
+  cursor: default;
+}
+.miniAvatar:hover { transform: translateY(-2px) scale(1.15); z-index: 5; }
+.miniAvatar:first-child { margin-left: 0; }
+
+/* ── Top buttons ─── */
+.topBtn {
+  font-size: 12px;
+  padding: 5px 12px;
+}
+.topBtnActive { background: rgba(0,255,191,0.1); border-color: var(--border-hi); color: var(--teal); }
+
+/* ── Main layout ─── */
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── Canvas wrap ─── */
+.canvasWrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Reaction name ─── */
+.reactionName {
+  display: block;
+  font-size: 10px;
+  text-align: center;
+  color: var(--text2);
+  font-family: var(--font-body);
+  margin-top: -4px;
+}
