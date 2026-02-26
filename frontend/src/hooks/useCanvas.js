@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 // ── Flood fill ─────────────────────────────────────────────
 function floodFill(ctx, sx, sy, fillHex) {
@@ -176,9 +177,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     // Easter egg: stroke count
     strokeCountRef.current++;
     if (strokeCountRef.current === 1000) {
-      import('react-hot-toast').then(({ default: toast }) =>
-        toast('🎨 Picasso mode unlocked — 1000 strokes!', { duration: 4000 })
-      );
+      toast('🎨 Picasso mode unlocked — 1000 strokes!', { duration: 4000 });
     }
   }, []);
 
@@ -497,9 +496,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
         if (pos === code.length) {
           pos = 0;
           setRainbowMode(true);
-          import('react-hot-toast').then(({ default: toast }) =>
-            toast('🌈 RAINBOW MODE ACTIVATED! ↑↑↓↓←→←→BA', { duration: 5000, icon: '🎮' })
-          );
+          toast('🌈 RAINBOW MODE ACTIVATED! ↑↑↓↓←→←→BA', { duration: 5000, icon: '🎮' });
           setTimeout(() => setRainbowMode(false), 15000);
         }
       } else { pos = 0; }
