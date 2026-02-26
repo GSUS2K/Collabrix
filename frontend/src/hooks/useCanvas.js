@@ -184,7 +184,10 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     const ctx = ctxRef.current;
     if (!canvas || !ctx || !dataUrl) return;
     const img = new Image();
-    img.onload = () => ctx.drawImage(img, 0, 0);
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+    };
     img.src = dataUrl;
   }, []);
 
