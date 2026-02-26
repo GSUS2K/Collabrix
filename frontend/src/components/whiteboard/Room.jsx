@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSocket } from '../../context/SocketContext';
 import { useCanvas } from '../../hooks/useCanvas';
+import { useWebRTC } from '../../hooks/useWebRTC';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import Canvas from './Canvas';
@@ -10,6 +11,7 @@ import Toolbar from './Toolbar';
 import ChatPanel from './ChatPanel';
 import UserList from './UserList';
 import GameMode from './GameMode';
+import MediaGallery from './MediaGallery';
 
 // Floating reaction component
 function ReactionBurst({ reactions }) {
@@ -55,6 +57,7 @@ export default function Room() {
   const canDraw = !gameLocked;
 
   const canvas = useCanvas({ socket, roomId, canDraw });
+  const webrtc = useWebRTC(socket, roomId, socket?.id);
 
   // ── Join ───────────────────────────────────────────────
   useEffect(() => {
@@ -202,23 +205,53 @@ export default function Room() {
           />
         </div>
 
-        {/* Center: Avatars */}
-        <div className="hidden md:flex items-center justify-center -space-x-2">
-          {users.slice(0, 6).map(u => (
-            <div
-              key={u.socketId}
-              className="w-8 h-8 rounded-full border-2 border-brand-dark flex items-center justify-center text-xs font-bold text-brand-dark shadow-sm z-10 hover:z-20 hover:-translate-y-1 transition-transform"
-              style={{ background: u.color || '#00FFBF' }}
-              title={u.username || '?'}
+        {/* Center: Avatars & Voice/Video Toggles */}
+        <div className="hidden md:flex items-center justify-center gap-4">
+          <div className="flex items-center -space-x-2">
+            {users.slice(0, 6).map(u => (
+              <div
+                key={u.socketId}
+                className="w-8 h-8 rounded-full border-2 border-brand-dark flex items-center justify-center text-xs font-bold text-brand-dark shadow-sm z-10 hover:z-20 hover:-translate-y-1 transition-transform relative"
+                style={{ background: u.color || '#00FFBF' }}
+                title={u.username || '?'}
+              >
+                {(u.username || '?')[0].toUpperCase()}
+              </div>
+            ))}
+            {users.length > 6 && (
+              <div className="w-8 h-8 rounded-full border-2 border-brand-dark bg-white/20 flex items-center justify-center text-[10px] font-bold text-white z-0">
+                +{users.length - 6}
+              </div>
+            )}
+          </div>
+
+          <div className="w-px h-5 bg-white/10" />
+
+          {/* WebRTC Controls */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={webrtc.toggleAudio}
+              className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${webrtc.audioEnabled ? 'bg-brand-accent/20 text-brand-accent shadow-[0_0_15px_rgba(0,255,191,0.2)]' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'}`}
+              title={webrtc.audioEnabled ? 'Mute Microphone' : 'Unmute Microphone'}
             >
-              {(u.username || '?')[0].toUpperCase()}
-            </div>
-          ))}
-          {users.length > 6 && (
-            <div className="w-8 h-8 rounded-full border-2 border-brand-dark bg-white/20 flex items-center justify-center text-[10px] font-bold text-white z-0">
-              +{users.length - 6}
-            </div>
-          )}
+              {webrtc.audioEnabled ? (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 00-3 3v7a3 3 0 006 0V5a3 3 0 00-3-3z"></path><path d="M19 10v2a7 7 0 01-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              ) : (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 005.12 2.12M15 9.34V4a3 3 0 00-5.94-.6"></path><path d="M17 16.95A7 7 0 015 12v-2m14 0v2a7 7 0 01-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+              )}
+            </button>
+            <button
+              onClick={webrtc.toggleVideo}
+              className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${webrtc.videoEnabled ? 'bg-brand-purple/20 text-[#A29BFE] shadow-[0_0_15px_rgba(162,155,254,0.2)]' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'}`}
+              title={webrtc.videoEnabled ? 'Stop Video' : 'Start Video'}
+            >
+              {webrtc.videoEnabled ? (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+              ) : (
+                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 16v1a2 2 0 01-2 2H3a2 2 0 01-2-2V7a2 2 0 012-2h2m5.66 0H14a2 2 0 012 2v3.34l1 1L23 7v10"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Right: Toggles */}
@@ -226,8 +259,8 @@ export default function Room() {
           {/* Game Toggle */}
           <button
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all border ${showGame
-                ? 'bg-brand-purple text-white border-brand-purple shadow-[0_0_15px_rgba(162,155,254,0.3)]'
-                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+              ? 'bg-brand-purple text-white border-brand-purple shadow-[0_0_15px_rgba(162,155,254,0.3)]'
+              : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
               }`}
             onClick={() => setShowGame(g => !g)}
             title="Skribbl game mode"
@@ -280,20 +313,28 @@ export default function Room() {
 
           {/* Skribbl Game Overlay */}
           {showGame && (
-            <div className="absolute top-4 right-4 z-20 shadow-2xl animate-[slideInRight_0.4s_ease-out]">
-              <GameMode
-                socket={socket}
-                roomId={roomId}
-                username={user?.username}
-                isHost={isHost}
-                onDrawingLock={setGameLocked}
-                onClose={() => setShowGame(false)}
-              />
-            </div>
+            <GameMode
+              socket={socket}
+              roomId={roomId}
+              username={user?.username}
+              isHost={isHost}
+              onDrawingLock={setGameLocked}
+              onClose={() => setShowGame(false)}
+            />
           )}
 
           {/* Reaction Burst */}
           <ReactionBurst reactions={reactions} />
+
+          {/* WebRTC Video/Audio Gallery */}
+          <div className="absolute bottom-4 left-4 right-4 z-30 pointer-events-none">
+            <MediaGallery
+              localStream={webrtc.localStream}
+              peers={webrtc.peers}
+              users={users}
+              myUsername={user?.username}
+            />
+          </div>
         </div>
 
         {/* Side Panels */}

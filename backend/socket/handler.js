@@ -64,8 +64,8 @@ const initSocket = (io) => {
 
     // ── Drawing ─────────────────────────────────────────────
     socket.on('draw:start', (data) => socket.to(data.roomId).emit('draw:start', data));
-    socket.on('draw:move',  (data) => socket.to(data.roomId).emit('draw:move', data));
-    socket.on('draw:end',   (data) => socket.to(data.roomId).emit('draw:end', data));
+    socket.on('draw:move', (data) => socket.to(data.roomId).emit('draw:move', data));
+    socket.on('draw:end', (data) => socket.to(data.roomId).emit('draw:end', data));
 
     socket.on('draw:clear', ({ roomId }) => {
       socket.to(roomId).emit('draw:clear');
@@ -88,7 +88,7 @@ const initSocket = (io) => {
     socket.on('canvas:save', async ({ roomId, canvasData }) => {
       try {
         await Room.findByIdAndUpdate(roomId, { canvasData, lastActive: new Date() });
-      } catch {}
+      } catch { }
     });
 
     // ── Cursor ──────────────────────────────────────────────
@@ -112,13 +112,13 @@ const initSocket = (io) => {
         await Room.findByIdAndUpdate(roomId, {
           $push: { chatHistory: { $each: [msg], $slice: -100 } },
         });
-      } catch {}
+      } catch { }
     });
 
     // ── Sticky Notes ────────────────────────────────────────
     socket.on('note:add', async ({ roomId, note }) => {
       socket.to(roomId).emit('note:add', { note });
-      try { await Room.findByIdAndUpdate(roomId, { $push: { stickyNotes: note } }); } catch {}
+      try { await Room.findByIdAndUpdate(roomId, { $push: { stickyNotes: note } }); } catch { }
     });
 
     socket.on('note:update', async ({ roomId, note }) => {
@@ -128,12 +128,12 @@ const initSocket = (io) => {
           { _id: roomId, 'stickyNotes.id': note.id },
           { $set: { 'stickyNotes.$': note } }
         );
-      } catch {}
+      } catch { }
     });
 
     socket.on('note:delete', async ({ roomId, noteId }) => {
       socket.to(roomId).emit('note:delete', { noteId });
-      try { await Room.findByIdAndUpdate(roomId, { $pull: { stickyNotes: { id: noteId } } }); } catch {}
+      try { await Room.findByIdAndUpdate(roomId, { $pull: { stickyNotes: { id: noteId } } }); } catch { }
     });
 
     // ── Reactions ───────────────────────────────────────────
@@ -147,7 +147,31 @@ const initSocket = (io) => {
       const user = users?.get(socket.id);
       if (!user?.isHost) return;
       io.to(roomId).emit('settings:updated', { settings });
-      try { await Room.findByIdAndUpdate(roomId, { settings }); } catch {}
+      try { await Room.findByIdAndUpdate(roomId, { settings }); } catch { }
+    });
+
+    // ── WebRTC Signaling (Mesh Network) ─────────────────────
+    socket.on('webrtc:offer', ({ target, caller, sdp }) => {
+      // Send offer to the specific target socket
+      io.to(target).emit('webrtc:offer', { caller, sdp });
+    });
+
+    socket.on('webrtc:answer', ({ target, caller, sdp }) => {
+      // Send answer back to the original caller
+      io.to(target).emit('webrtc:answer', { caller, sdp });
+    });
+
+    socket.on('webrtc:ice-candidate', ({ target, caller, candidate }) => {
+      io.to(target).emit('webrtc:ice-candidate', { caller, candidate });
+    });
+
+    socket.on('webrtc:toggle-media', ({ roomId, type, isEnabled }) => {
+      // type: 'audio' | 'video'
+      socket.to(roomId).emit('webrtc:user-toggled-media', {
+        socketId: socket.id,
+        type,
+        isEnabled
+      });
     });
 
     // ── Game ────────────────────────────────────────────────

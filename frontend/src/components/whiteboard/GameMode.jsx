@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import Draggable from 'react-draggable';
 
 export default function GameMode({ socket, roomId, username, isHost, onDrawingLock, onClose }) {
   const [phase, setPhase] = useState('lobby'); // lobby|choosing|drawing|turnEnd|over
@@ -270,144 +271,152 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
 
   // ── In-game HUD ──────────────────────────────────────────
   return (
-    <div className="w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+    <Draggable handle=".game-drag-handle" bounds="parent">
+      <div className="absolute z-40 top-4 right-4 w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
 
-      {/* Turn end flash */}
-      {phase === 'turnEnd' && (
-        <div className="absolute inset-0 z-30 bg-brand-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-[fadeIn_0.2s]">
-          <span className="text-5xl mb-4">⏰</span>
-          <div className="text-lg text-white/80 mb-2">The word was</div>
-          <div className="text-3xl font-display font-black text-brand-accent tracking-widest uppercase mb-6">{turnWord}</div>
-          <div className="text-sm font-medium text-white/40 flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
-            Next round starting...
+
+        {/* Turn end flash */}
+        {phase === 'turnEnd' && (
+          <div className="absolute inset-0 z-30 bg-brand-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-[fadeIn_0.2s]">
+            <span className="text-5xl mb-4">⏰</span>
+            <div className="text-lg text-white/80 mb-2">The word was</div>
+            <div className="text-3xl font-display font-black text-brand-accent tracking-widest uppercase mb-6">{turnWord}</div>
+            <div className="text-sm font-medium text-white/40 flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+              Next round starting...
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Timer bar */}
-      <div className="h-1.5 w-full bg-brand-dark">
-        <div
-          className="h-full transition-all duration-1000 ease-linear rounded-r-full"
-          style={{ width: `${timerPct}%`, backgroundColor: timerColor }}
-        />
-      </div>
-
-      {/* HUD top (Word & Status) */}
-      <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden">
-
-        <div className="flex justify-between items-center mb-3">
-          <span className="text-[10px] font-bold tracking-widest uppercase text-white/40 bg-white/5 px-2 py-0.5 rounded">
-            Round {round}/{maxRounds}
-          </span>
-          <div className="text-base font-black font-mono" style={{ color: timerColor }}>⏱ {timer}s</div>
+        {/* Timer bar */}
+        <div className="h-1.5 w-full bg-brand-dark">
+          <div
+            className="h-full transition-all duration-1000 ease-linear rounded-r-full"
+            style={{ width: `${timerPct}%`, backgroundColor: timerColor }}
+          />
         </div>
 
-        {/* Word Display */}
-        <div className="flex justify-center mb-2 min-h-[40px] items-center">
-          {amDrawing ? (
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-brand-yellow/80 font-bold uppercase tracking-wider mb-1">Draw this:</span>
-              <span className="text-2xl font-display font-black text-white tracking-widest uppercase">{myWord}</span>
-            </div>
-          ) : youGuessed ? (
-            <div className="flex flex-col items-center animate-[fadeIn_0.3s]">
-              <span className="text-xs text-brand-accent/80 font-bold uppercase tracking-wider mb-1">You Guessed It!</span>
-              <span className="text-2xl font-display font-black text-brand-accent tracking-widest uppercase text-shadow-sm">{maskedWord}</span>
-            </div>
-          ) : (
-            <div className="flex gap-1 flex-wrap justify-center">
-              {maskedWord.split('').map((c, i) => (
-                <span
-                  key={i}
-                  className={`flex items-center justify-center font-display font-bold uppercase text-xl
+        {/* HUD top (Word & Status) */}
+        <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden">
+
+          {/* Drag Handle */}
+          <div className="game-drag-handle flex justify-center pb-2 cursor-grab active:cursor-grabbing hover:bg-white/5 -mt-2 -mx-4 mb-2 opacity-50 transition-colors">
+            <div className="w-12 h-1.5 bg-white/20 rounded-full" />
+          </div>
+
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-[10px] font-bold tracking-widest uppercase text-white/40 bg-white/5 px-2 py-0.5 rounded">
+              Round {round}/{maxRounds}
+            </span>
+            <div className="text-base font-black font-mono pr-12" style={{ color: timerColor }}>⏱ {timer}s</div>
+          </div>
+
+          {/* Word Display */}
+          <div className="flex justify-center mb-2 min-h-[40px] items-center">
+            {amDrawing ? (
+              <div className="flex flex-col items-center">
+                <span className="text-xs text-brand-yellow/80 font-bold uppercase tracking-wider mb-1">Draw this:</span>
+                <span className="text-2xl font-display font-black text-white tracking-widest uppercase">{myWord}</span>
+              </div>
+            ) : youGuessed ? (
+              <div className="flex flex-col items-center animate-[fadeIn_0.3s]">
+                <span className="text-xs text-brand-accent/80 font-bold uppercase tracking-wider mb-1">You Guessed It!</span>
+                <span className="text-2xl font-display font-black text-brand-accent tracking-widest uppercase text-shadow-sm">{maskedWord}</span>
+              </div>
+            ) : (
+              <div className="flex gap-1 flex-wrap justify-center">
+                {maskedWord.split('').map((c, i) => (
+                  <span
+                    key={i}
+                    className={`flex items-center justify-center font-display font-bold uppercase text-xl
                     ${c === '_' ? 'w-4 border-b-2 border-white/40 mb-1 mx-0.5'
-                      : c === ' ' ? 'w-4'
-                        : 'w-auto min-w-[16px] text-white'}`}
-                >
-                  {c === '_' ? '' : c === ' ' ? '' : c}
-                </span>
-              ))}
-            </div>
+                        : c === ' ' ? 'w-4'
+                          : 'w-auto min-w-[16px] text-white'}`}
+                  >
+                    {c === '_' ? '' : c === ' ' ? '' : c}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {isHost && (
+            <button
+              className="absolute top-8 right-3 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors z-10 bg-brand-dark/50 px-2 py-1 rounded"
+              onClick={stopGame}
+            >
+              ■ Stop
+            </button>
           )}
         </div>
 
-        {isHost && (
-          <button
-            className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors"
-            onClick={stopGame}
-          >
-            ■ Stop
-          </button>
-        )}
-      </div>
-
-      {/* Scoreboard */}
-      <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar">
-        {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
-          <div
-            key={p.socketId}
-            className={`flex items-center gap-2 p-1.5 rounded-lg text-xs font-semibold
-              ${p.username === username ? 'bg-brand-accent/10 border border-brand-accent/20 text-brand-accent' : 'bg-white/5 text-white/70'}`}
-          >
-            <span className={`w-3 flex-shrink-0 text-[10px] ${i === 0 ? 'text-brand-yellow' : 'opacity-40'}`}>#{i + 1}</span>
-            <span className="flex-1 truncate">
-              {p.username}
-              {p.socketId === drawerSid && <span className="ml-1 text-[10px]">✏️</span>}
-            </span>
-            <span className="font-mono">{p.score}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Guess panel (Chat Log) */}
-      <div className="flex-1 min-h-[200px] flex flex-col bg-brand-dark/10">
-        <div className="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm hide-scrollbar" ref={logRef}>
-          {guessLog.slice(-15).map(g => (
+        {/* Scoreboard */}
+        <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar">
+          {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
             <div
-              key={g.id}
-              className={`px-3 py-1.5 rounded-lg break-words animate-[fadeIn_0.2s_ease-out]
+              key={p.socketId}
+              className={`flex items-center gap-2 p-1.5 rounded-lg text-xs font-semibold
+              ${p.username === username ? 'bg-brand-accent/10 border border-brand-accent/20 text-brand-accent' : 'bg-white/5 text-white/70'}`}
+            >
+              <span className={`w-3 flex-shrink-0 text-[10px] ${i === 0 ? 'text-brand-yellow' : 'opacity-40'}`}>#{i + 1}</span>
+              <span className="flex-1 truncate">
+                {p.username}
+                {p.socketId === drawerSid && <span className="ml-1 text-[10px]">✏️</span>}
+              </span>
+              <span className="font-mono">{p.score}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Guess panel (Chat Log) */}
+        <div className="flex-1 min-h-[200px] flex flex-col bg-brand-dark/10">
+          <div className="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm hide-scrollbar" ref={logRef}>
+            {guessLog.slice(-15).map(g => (
+              <div
+                key={g.id}
+                className={`px-3 py-1.5 rounded-lg break-words animate-[fadeIn_0.2s_ease-out]
                 ${g.type === 'system' ? 'text-white/50 text-xs font-bold text-center my-2' : ''}
                 ${g.type === 'wrong' ? 'text-white/80 bg-white/5' : ''}
                 ${g.type === 'close' ? 'text-brand-yellow font-medium bg-brand-yellow/10 border border-brand-yellow/20' : ''}
                 ${g.type === 'hint' ? 'text-brand-purple font-medium bg-brand-purple/10 border border-brand-purple/20' : ''}
                 ${g.type === 'correct' ? 'text-brand-accent font-bold bg-brand-accent/10 border border-brand-accent/20 shadow-[0_0_10px_rgba(0,255,191,0.1)]' : ''}
               `}
-            >
-              {g.text}
-            </div>
-          ))}
-        </div>
-
-        {/* Input */}
-        {!amDrawing && phase === 'drawing' && !youGuessed && (
-          <div className="p-3 bg-brand-dark pb-4">
-            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent transition-all">
-              <input
-                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none"
-                placeholder="Type your guess..."
-                value={guessInput}
-                onChange={e => setGuessInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && sendGuess()}
-                autoFocus
-              />
-              <button
-                className="px-4 text-brand-dark bg-brand-accent hover:bg-brand-accentHover font-bold transition-colors disabled:opacity-50"
-                onClick={sendGuess}
-                disabled={!guessInput.trim()}
               >
-                →
-              </button>
-            </div>
+                {g.text}
+              </div>
+            ))}
           </div>
-        )}
 
-        {youGuessed && (
-          <div className="p-4 bg-brand-dark/80 text-center">
-            <div className="text-xs font-bold text-brand-accent uppercase tracking-wider">🎉 Correct! Watch others guess.</div>
-          </div>
-        )}
+          {/* Input */}
+          {!amDrawing && phase === 'drawing' && !youGuessed && (
+            <div className="p-3 bg-brand-dark pb-4">
+              <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent transition-all">
+                <input
+                  className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none"
+                  placeholder="Type your guess..."
+                  value={guessInput}
+                  onChange={e => setGuessInput(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && sendGuess()}
+                  autoFocus
+                />
+                <button
+                  className="px-4 text-brand-dark bg-brand-accent hover:bg-brand-accentHover font-bold transition-colors disabled:opacity-50"
+                  onClick={sendGuess}
+                  disabled={!guessInput.trim()}
+                >
+                  →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {youGuessed && (
+            <div className="p-4 bg-brand-dark/80 text-center">
+              <div className="text-xs font-bold text-brand-accent uppercase tracking-wider">🎉 Correct! Watch others guess.</div>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </Draggable>
   );
 }
