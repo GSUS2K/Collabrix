@@ -161,9 +161,12 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
   // ── History ─────────────────────────────────────────────
   const saveHistory = useCallback(() => {
     const canvas = canvasRef.current;
-    const ctx = ctxRef.current;
-    if (!canvas || !ctx || canvas.width === 0 || canvas.height === 0) return;
+    if (!canvas || canvas.width === 0 || canvas.height === 0) return;
     const snap = canvas.toDataURL();
+
+    // If the new snapshot is identical to the current one, don't save a duplicate
+    if (histIdxRef.current >= 0 && historyRef.current[histIdxRef.current] === snap) return;
+
     // Trim redo stack
     historyRef.current = historyRef.current.slice(0, histIdxRef.current + 1);
     historyRef.current.push(snap);
@@ -185,6 +188,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     if (!canvas || !ctx || !dataUrl) return;
     const img = new Image();
     img.onload = () => {
+      // Clear before drawing
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
     };
@@ -212,7 +216,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     const ctx = ctxRef.current;
     if (!canvas || !ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    saveHistory();
+    saveHistory(); // Immediately saves the blank state
     if (emit) socket?.emit('draw:clear', { roomId });
   }, [socket, roomId, saveHistory]);
 
