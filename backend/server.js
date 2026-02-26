@@ -12,6 +12,16 @@ const { initSocket } = require('./socket/handler');
 const app = express();
 const server = http.createServer(app);
 
+// ── Startup Validation ────────────────────────────────────
+if (!process.env.MONGO_URI) {
+  console.error("❌ FATAL ERROR: MONGO_URI environment variable is not set.");
+  process.exit(1);
+}
+if (!process.env.JWT_SECRET) {
+  console.error("❌ FATAL ERROR: JWT_SECRET environment variable is not set.");
+  process.exit(1);
+}
+
 // ── Connect DB ────────────────────────────────────────────
 connectDB();
 
