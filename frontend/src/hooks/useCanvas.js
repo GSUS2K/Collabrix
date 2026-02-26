@@ -14,20 +14,20 @@ function floodFill(ctx, sx, sy, fillHex) {
 
   const ri = (x, y) => (y * w + x) * 4;
   const si = ri(sx, sy);
-  const [tR, tG, tB, tA] = [d[si], d[si+1], d[si+2], d[si+3]];
+  const [tR, tG, tB, tA] = [d[si], d[si + 1], d[si + 2], d[si + 3]];
 
-  const fr = parseInt(fillHex.slice(1,3), 16);
-  const fg = parseInt(fillHex.slice(3,5), 16);
-  const fb = parseInt(fillHex.slice(5,7), 16);
+  const fr = parseInt(fillHex.slice(1, 3), 16);
+  const fg = parseInt(fillHex.slice(3, 5), 16);
+  const fb = parseInt(fillHex.slice(5, 7), 16);
   const fa = 255;
 
   if (tR === fr && tG === fg && tB === fb && tA === fa) return;
 
   const match = (i) =>
-    Math.abs(d[i]   - tR) < 30 &&
-    Math.abs(d[i+1] - tG) < 30 &&
-    Math.abs(d[i+2] - tB) < 30 &&
-    Math.abs(d[i+3] - tA) < 30;
+    Math.abs(d[i] - tR) < 30 &&
+    Math.abs(d[i + 1] - tG) < 30 &&
+    Math.abs(d[i + 2] - tB) < 30 &&
+    Math.abs(d[i + 3] - tA) < 30;
 
   const visited = new Uint8Array(w * h);
   const stack = [sx + sy * w];
@@ -39,8 +39,8 @@ function floodFill(ctx, sx, sy, fillHex) {
     const y = Math.floor(pos / w);
     const ci = pos * 4;
     if (!match(ci)) continue;
-    d[ci] = fr; d[ci+1] = fg; d[ci+2] = fb; d[ci+3] = fa;
-    const neighbors = [[x+1,y],[x-1,y],[x,y+1],[x,y-1]];
+    d[ci] = fr; d[ci + 1] = fg; d[ci + 2] = fb; d[ci + 3] = fa;
+    const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
     for (const [nx, ny] of neighbors) {
       if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
         const ni = nx + ny * w;
@@ -61,8 +61,8 @@ function drawArrow(ctx, x1, y1, x2, y2) {
   ctx.stroke();
   ctx.beginPath();
   ctx.moveTo(x2, y2);
-  ctx.lineTo(x2 - len * Math.cos(angle - Math.PI/7), y2 - len * Math.sin(angle - Math.PI/7));
-  ctx.lineTo(x2 - len * Math.cos(angle + Math.PI/7), y2 - len * Math.sin(angle + Math.PI/7));
+  ctx.lineTo(x2 - len * Math.cos(angle - Math.PI / 7), y2 - len * Math.sin(angle - Math.PI / 7));
+  ctx.lineTo(x2 - len * Math.cos(angle + Math.PI / 7), y2 - len * Math.sin(angle + Math.PI / 7));
   ctx.closePath();
   ctx.fill();
 }
@@ -91,27 +91,27 @@ function drawTriangle(ctx, x1, y1, x2, y2) {
 }
 
 export const useCanvas = ({ socket, roomId, canDraw = true }) => {
-  const canvasRef     = useRef(null);
-  const ctxRef        = useRef(null);
-  const isDrawingRef  = useRef(false);
-  const lastPosRef    = useRef({ x: 0, y: 0 });
-  const startPosRef   = useRef({ x: 0, y: 0 });
-  const snapshotRef   = useRef(null);
-  const historyRef    = useRef([]);
-  const histIdxRef    = useRef(-1);
-  const remoteRef     = useRef(new Map()); // socketId -> {isDrawing, lastPos, snapshot}
-  const textInputRef  = useRef(null);
+  const canvasRef = useRef(null);
+  const ctxRef = useRef(null);
+  const isDrawingRef = useRef(false);
+  const lastPosRef = useRef({ x: 0, y: 0 });
+  const startPosRef = useRef({ x: 0, y: 0 });
+  const snapshotRef = useRef(null);
+  const historyRef = useRef([]);
+  const histIdxRef = useRef(-1);
+  const remoteRef = useRef(new Map()); // socketId -> {isDrawing, lastPos, snapshot}
+  const textInputRef = useRef(null);
   const strokeCountRef = useRef(0);
 
-  const [tool, setTool]         = useState('pencil');
-  const [color, setColor]       = useState('#ffffff');
-  const [size, setSize]         = useState(4);
-  const [bg, setBg]             = useState('blank');
+  const [tool, setTool] = useState('pencil');
+  const [color, setColor] = useState('#ffffff');
+  const [size, setSize] = useState(4);
+  const [bg, setBg] = useState('blank');
   const [rainbowMode, setRainbowMode] = useState(false);
 
-  const toolRef   = useRef(tool);
-  const colorRef  = useRef(color);
-  const sizeRef   = useRef(size);
+  const toolRef = useRef(tool);
+  const colorRef = useRef(color);
+  const sizeRef = useRef(size);
   const rainbowRef = useRef(false);
   const rainbowHueRef = useRef(0);
 
@@ -124,7 +124,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
   const initCanvas = useCallback((canvas) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    ctx.lineCap  = 'round';
+    ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctxRef.current = ctx;
     canvasRef.current = canvas;
@@ -139,14 +139,24 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
 
     let saved = null;
     if (canvas.width > 0 && canvas.height > 0) {
-      try { saved = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch {}
+      try { saved = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch { }
     }
-    canvas.width  = width;
+    canvas.width = width;
     canvas.height = height;
-    ctx.lineCap  = 'round';
+    ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    if (saved) try { ctx.putImageData(saved, 0, 0); } catch {}
-  }, []);
+    if (saved) {
+      try { ctx.putImageData(saved, 0, 0); } catch { }
+    } else {
+      ctx.fillStyle = bg === 'blank' ? 'transparent' : 'transparent';
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // Save initial state to history so undo/redo works
+    if (historyRef.current.length === 0) {
+      saveHistory();
+    }
+  }, [saveHistory, bg]);
 
   // ── History ─────────────────────────────────────────────
   const saveHistory = useCallback(() => {
@@ -224,8 +234,8 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
   // ── Apply ctx settings ───────────────────────────────────
   const applyCtx = (ctx, c, s, composite = 'source-over') => {
     ctx.strokeStyle = c;
-    ctx.fillStyle   = c;
-    ctx.lineWidth   = s;
+    ctx.fillStyle = c;
+    ctx.lineWidth = s;
     ctx.globalCompositeOperation = composite;
   };
 
@@ -243,11 +253,11 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
         drawArrow(ctx, x1, y1, x2, y2);
         break;
       case 'rect':
-        ctx.beginPath(); ctx.rect(x1, y1, x2-x1, y2-y1); ctx.stroke();
+        ctx.beginPath(); ctx.rect(x1, y1, x2 - x1, y2 - y1); ctx.stroke();
         break;
       case 'circle':
         ctx.beginPath();
-        ctx.ellipse((x1+x2)/2, (y1+y2)/2, Math.abs(x2-x1)/2, Math.abs(y2-y1)/2, 0, 0, Math.PI*2);
+        ctx.ellipse((x1 + x2) / 2, (y1 + y2) / 2, Math.abs(x2 - x1) / 2, Math.abs(y2 - y1) / 2, 0, 0, Math.PI * 2);
         ctx.stroke();
         break;
       case 'diamond':
@@ -260,7 +270,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     }
   };
 
-  const isShapeTool = (t) => ['line','arrow','rect','circle','diamond','triangle'].includes(t);
+  const isShapeTool = (t) => ['line', 'arrow', 'rect', 'circle', 'diamond', 'triangle'].includes(t);
 
   // ── Mouse events ─────────────────────────────────────────
   const startDrawing = useCallback((e) => {
@@ -366,18 +376,18 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     const input = document.createElement('input');
     input.id = 'canvas-text-input';
     Object.assign(input.style, {
-      position:   'fixed',
-      left:       `${rect.left + (x / canvas.width) * rect.width}px`,
-      top:        `${rect.top + (y / canvas.height) * rect.height}px`,
+      position: 'fixed',
+      left: `${rect.left + (x / canvas.width) * rect.width}px`,
+      top: `${rect.top + (y / canvas.height) * rect.height}px`,
       background: 'transparent',
-      border:     '1px dashed rgba(255,255,255,0.3)',
-      color:      c,
-      fontSize:   `${Math.max(s * 3, 14)}px`,
+      border: '1px dashed rgba(255,255,255,0.3)',
+      color: c,
+      fontSize: `${Math.max(s * 3, 14)}px`,
       fontFamily: "'Karla', sans-serif",
-      outline:    'none',
-      padding:    '2px 4px',
-      minWidth:   '80px',
-      zIndex:     '1000',
+      outline: 'none',
+      padding: '2px 4px',
+      minWidth: '80px',
+      zIndex: '1000',
     });
     document.body.appendChild(input);
     input.focus();
@@ -406,7 +416,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     if (isShapeTool(tool)) {
       const canvas = canvasRef.current;
       if (canvas?.width > 0 && canvas?.height > 0) {
-        try { state.snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch {}
+        try { state.snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); } catch { }
       }
     }
     remoteRef.current.set(socketId, state);
@@ -463,7 +473,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
       // Tool shortcuts
-      const shortcuts = { p:'pencil', e:'eraser', l:'line', r:'rect', c:'circle', a:'arrow', f:'fill', t:'text' };
+      const shortcuts = { p: 'pencil', e: 'eraser', l: 'line', r: 'rect', c: 'circle', a: 'arrow', f: 'fill', t: 'text' };
       if (shortcuts[e.key] && !e.ctrlKey && !e.metaKey) setTool(shortcuts[e.key]);
     };
     window.addEventListener('keydown', onKey);
@@ -472,7 +482,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
 
   // ── Konami code easter egg ───────────────────────────────
   useEffect(() => {
-    const code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let pos = 0;
     const onKey = (e) => {
       if (e.key === code[pos]) {
