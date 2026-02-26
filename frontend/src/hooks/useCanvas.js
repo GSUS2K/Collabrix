@@ -131,6 +131,28 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     canvasRef.current = canvas;
   }, []);
 
+  // ── History ─────────────────────────────────────────────
+  const saveHistory = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || canvas.width === 0 || canvas.height === 0) return;
+    const snap = canvas.toDataURL();
+
+    // If the new snapshot is identical to the current one, don't save a duplicate
+    if (histIdxRef.current >= 0 && historyRef.current[histIdxRef.current] === snap) return;
+
+    // Trim redo stack
+    historyRef.current = historyRef.current.slice(0, histIdxRef.current + 1);
+    historyRef.current.push(snap);
+    if (historyRef.current.length > 40) historyRef.current.shift();
+    histIdxRef.current = historyRef.current.length - 1;
+
+    // Easter egg: stroke count
+    strokeCountRef.current++;
+    if (strokeCountRef.current === 1000) {
+      toast('🎨 Picasso mode unlocked — 1000 strokes!', { duration: 4000 });
+    }
+  }, []);
+
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = ctxRef.current;
@@ -159,27 +181,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     }
   }, [saveHistory, bg]);
 
-  // ── History ─────────────────────────────────────────────
-  const saveHistory = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || canvas.width === 0 || canvas.height === 0) return;
-    const snap = canvas.toDataURL();
 
-    // If the new snapshot is identical to the current one, don't save a duplicate
-    if (histIdxRef.current >= 0 && historyRef.current[histIdxRef.current] === snap) return;
-
-    // Trim redo stack
-    historyRef.current = historyRef.current.slice(0, histIdxRef.current + 1);
-    historyRef.current.push(snap);
-    if (historyRef.current.length > 40) historyRef.current.shift();
-    histIdxRef.current = historyRef.current.length - 1;
-
-    // Easter egg: stroke count
-    strokeCountRef.current++;
-    if (strokeCountRef.current === 1000) {
-      toast('🎨 Picasso mode unlocked — 1000 strokes!', { duration: 4000 });
-    }
-  }, []);
 
   const restoreCanvas = useCallback((dataUrl) => {
     const canvas = canvasRef.current;
