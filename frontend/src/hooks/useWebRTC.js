@@ -7,35 +7,144 @@ export const useWebRTC = (socket, roomId, myId) => {
     const [localStream, setLocalStream] = useState(null);
     const [audioEnabled, setAudioEnabled] = useState(false);
     const [videoEnabled, setVideoEnabled] = useState(false);
+    const [screenEnabled, setScreenEnabled] = useState(false);
 
     const peersRef = useRef({}); // socketId -> Peer instance
     const streamRef = useRef(null);
 
-    // 1. Get User Media Permissions
-    const startMedia = useCallback(async (video = true, audio = true) => {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video, audio });
-            streamRef.current = stream;
-            setLocalStream(stream);
-            setAudioEnabled(audio);
-            setVideoEnabled(video);
+    // Sync state locally and globally
+    const updateMediaState = (type, isEnabled) => {
+        if (type === 'audio') setAudioEnabled(isEnabled);
+        if (type === 'video') setVideoEnabled(isEnabled);
+        if (type === 'screen') setScreenEnabled(isEnabled);
+        socket?.emit('webrtc:toggle-media', { roomId, type, isEnabled });
+    };
 
-            // Broadcast toggle state to others
-            socket?.emit('webrtc:toggle-media', { roomId, type: 'audio', isEnabled: audio });
-            socket?.emit('webrtc:toggle-media', { roomId, type: 'video', isEnabled: video });
+    // Safely add or replace a track for all peers
+    const replaceTrackForPeers = (oldTrack, newTrack) => {
+        Object.values(peersRef.current).forEach(peer => {
+            try {
+                if (oldTrack) peer.replaceTrack(oldTrack, newTrack, streamRef.current);
+                else peer.addTrack(newTrack, streamRef.current);
+            } catch (err) {
+                console.warn('Error replacing track on peer', err);
+            }
+        });
+    };
 
-            // If we already have peers, add this new stream to them
-            Object.values(peersRef.current).forEach(peer => {
-                try { peer.addStream(stream); } catch (e) { console.error('Error adding stream to peer', e); }
-            });
-
-            return stream;
-        } catch (err) {
-            console.warn("Media devices error:", err);
-            toast.error("Could not access camera/microphone.");
-            return null;
+    const toggleAudio = async () => {
+        if (!streamRef.current) {
+            streamRef.current = new MediaStream();
+            setLocalStream(streamRef.current);
         }
-    }, [socket, roomId]);
+
+        let audioTrack = streamRef.current.getAudioTracks()[0];
+
+        if (!audioTrack) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioTrack = stream.getAudioTracks()[0];
+                streamRef.current.addTrack(audioTrack);
+
+                // Add to existing peers
+                Object.values(peersRef.current).forEach(peer => {
+                    try { peer.addStream(streamRef.current); } catch (e) { }
+                });
+            } catch (err) {
+                toast.error('Microphone exactly denied or unavailable.');
+                return;
+            }
+        }
+
+        audioTrack.enabled = !audioTrack.enabled;
+        updateMediaState('audio', audioTrack.enabled);
+    };
+
+    const toggleVideo = async () => {
+        if (!streamRef.current) {
+            streamRef.current = new MediaStream();
+            setLocalStream(streamRef.current);
+        }
+
+        let videoTrack = streamRef.current.getVideoTracks().find(t => t.label.toLowerCase().includes('screen') === false);
+
+        // If we are currently sharing screen, we should probably stop it or replace it, but let's just use regular camera.
+        if (!videoTrack) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoTrack = stream.getVideoTracks()[0];
+                streamRef.current.addTrack(videoTrack);
+
+                Object.values(peersRef.current).forEach(peer => {
+                    try { peer.addStream(streamRef.current); } catch (e) { }
+                });
+            } catch (err) {
+                toast.error('Camera permission denied or unavailable.');
+                return;
+            }
+        }
+
+        videoTrack.enabled = !videoTrack.enabled;
+        updateMediaState('video', videoTrack.enabled);
+    };
+
+    const toggleScreenShare = async () => {
+        if (!streamRef.current) {
+            streamRef.current = new MediaStream();
+            setLocalStream(streamRef.current);
+        }
+
+        if (screenEnabled) {
+            // Turning OFF screen share
+            const screenTrack = streamRef.current.getVideoTracks()[0];
+            if (screenTrack) {
+                screenTrack.stop();
+                streamRef.current.removeTrack(screenTrack);
+            }
+            // If they had video enabled before, it's gone now. 
+            updateMediaState('video', false);
+            updateMediaState('screen', false);
+            setVideoEnabled(false);
+
+            // Renegotiate or remove stream across peers
+            Object.values(peersRef.current).forEach(peer => {
+                try { if (screenTrack) peer.removeTrack(screenTrack, streamRef.current); } catch (e) { }
+            });
+            return;
+        }
+
+        // Turning ON screen share
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+            const screenTrack = stream.getVideoTracks()[0];
+
+            // Stop existing camera track if present
+            const existingVideo = streamRef.current.getVideoTracks()[0];
+            if (existingVideo) {
+                existingVideo.stop();
+                streamRef.current.removeTrack(existingVideo);
+                replaceTrackForPeers(existingVideo, screenTrack);
+            } else {
+                streamRef.current.addTrack(screenTrack);
+                Object.values(peersRef.current).forEach(peer => {
+                    try { peer.addStream(streamRef.current); } catch (e) { }
+                });
+            }
+
+            screenTrack.onended = () => {
+                updateMediaState('screen', false);
+                updateMediaState('video', false);
+                streamRef.current.removeTrack(screenTrack);
+            };
+
+            updateMediaState('screen', true);
+            updateMediaState('video', true); // Treat screen share as a video stream for UI
+
+        } catch (err) {
+            // User cancelled screen share picker
+            console.warn("Screen share cancelled", err);
+        }
+    };
 
     // 2. Stop User Media
     const stopMedia = useCallback(() => {
@@ -44,11 +153,9 @@ export const useWebRTC = (socket, roomId, myId) => {
             streamRef.current = null;
         }
         setLocalStream(null);
-        setAudioEnabled(false);
-        setVideoEnabled(false);
-
-        socket?.emit('webrtc:toggle-media', { roomId, type: 'audio', isEnabled: false });
-        socket?.emit('webrtc:toggle-media', { roomId, type: 'video', isEnabled: false });
+        updateMediaState('audio', false);
+        updateMediaState('video', false);
+        updateMediaState('screen', false);
 
         // Remove stream from all peers
         Object.values(peersRef.current).forEach(peer => {
@@ -57,35 +164,6 @@ export const useWebRTC = (socket, roomId, myId) => {
             } catch (e) { console.error('Error removing stream', e); }
         });
     }, [socket, roomId]);
-
-    // Toggle helpers
-    const toggleAudio = async () => {
-        if (!streamRef.current) {
-            const stream = await startMedia(false, true);
-            if (!stream) return; // Permission denied or failed
-        }
-
-        const audioTrack = streamRef.current?.getAudioTracks()[0];
-        if (audioTrack) {
-            audioTrack.enabled = !audioTrack.enabled;
-            setAudioEnabled(audioTrack.enabled);
-            socket?.emit('webrtc:toggle-media', { roomId, type: 'audio', isEnabled: audioTrack.enabled });
-        }
-    };
-
-    const toggleVideo = async () => {
-        if (!streamRef.current) {
-            const stream = await startMedia(true, audioEnabled);
-            if (!stream) return; // Permission denied or failed
-        }
-
-        const videoTrack = streamRef.current?.getVideoTracks()[0];
-        if (videoTrack) {
-            videoTrack.enabled = !videoTrack.enabled;
-            setVideoEnabled(videoTrack.enabled);
-            socket?.emit('webrtc:toggle-media', { roomId, type: 'video', isEnabled: videoTrack.enabled });
-        }
-    };
 
     // 3. Create a Peer (Initiator)
     const createPeer = useCallback((userToSignal, callerId, stream) => {
@@ -218,9 +296,10 @@ export const useWebRTC = (socket, roomId, myId) => {
         peers,
         audioEnabled,
         videoEnabled,
+        screenEnabled,
         toggleAudio,
         toggleVideo,
-        startMedia,
+        toggleScreenShare,
         stopMedia
     };
 };

@@ -251,6 +251,13 @@ export default function Room() {
                 <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 16v1a2 2 0 01-2 2H3a2 2 0 01-2-2V7a2 2 0 012-2h2m5.66 0H14a2 2 0 012 2v3.34l1 1L23 7v10"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
               )}
             </button>
+            <button
+              onClick={webrtc.toggleScreenShare}
+              className={`w-9 h-9 flex items-center justify-center rounded-full transition-all ${webrtc.screenEnabled ? 'bg-brand-accent/20 text-brand-accent shadow-[0_0_15px_rgba(0,255,191,0.2)]' : 'bg-white/5 text-white/40 hover:bg-white/10 hover:text-white'}`}
+              title={webrtc.screenEnabled ? 'Stop Screen Share' : 'Record Screen'}
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </button>
           </div>
         </div>
 
