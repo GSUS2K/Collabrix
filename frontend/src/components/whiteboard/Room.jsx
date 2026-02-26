@@ -5,12 +5,11 @@ import { useSocket } from '../../context/SocketContext';
 import { useCanvas } from '../../hooks/useCanvas';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import Canvas    from './Canvas';
-import Toolbar   from './Toolbar';
+import Canvas from './Canvas';
+import Toolbar from './Toolbar';
 import ChatPanel from './ChatPanel';
-import UserList  from './UserList';
-import GameMode  from './GameMode';
-import styles    from './Room.module.css';
+import UserList from './UserList';
+import GameMode from './GameMode';
 
 // Floating reaction component
 function ReactionBurst({ reactions }) {
@@ -23,7 +22,11 @@ function ReactionBurst({ reactions }) {
           style={{ left: r.x, top: r.y }}
         >
           {r.emoji}
-          {r.username && <span className={styles.reactionName}>{r.username}</span>}
+          {r.username && (
+            <span className="absolute left-1/2 -translate-x-1/2 -bottom-4 text-[10px] font-bold text-white bg-black/60 px-1.5 py-0.5 rounded whitespace-nowrap opacity-80 backdrop-blur-sm">
+              {r.username}
+            </span>
+          )}
         </div>
       ))}
     </>
@@ -32,17 +35,17 @@ function ReactionBurst({ reactions }) {
 
 export default function Room() {
   const { id: roomId } = useParams();
-  const { user }       = useAuth();
-  const { socket }     = useSocket();
-  const navigate       = useNavigate();
+  const { user } = useAuth();
+  const { socket } = useSocket();
+  const navigate = useNavigate();
 
-  const [room, setRoom]           = useState(null);
-  const [users, setUsers]         = useState([]);
-  const [me, setMe]               = useState(null);
-  const [messages, setMessages]   = useState([]);
-  const [loading, setLoading]     = useState(true);
-  const [panel, setPanel]         = useState('chat'); // chat | users | null
-  const [showGame, setShowGame]   = useState(false);
+  const [room, setRoom] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [me, setMe] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [panel, setPanel] = useState('chat'); // chat | users | null
+  const [showGame, setShowGame] = useState(false);
   const [gameLocked, setGameLocked] = useState(false);
   const [reactions, setReactions] = useState([]);
   const [connected, setConnected] = useState(false);
@@ -64,7 +67,7 @@ export default function Room() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('connect',    () => setConnected(true));
+    socket.on('connect', () => setConnected(true));
     socket.on('disconnect', () => setConnected(false));
 
     socket.on('room:joined', ({ room: r, users: u, me: myInfo }) => {
@@ -91,12 +94,12 @@ export default function Room() {
 
     // Drawing
     socket.on('draw:start', canvas.handleRemoteStart);
-    socket.on('draw:move',  canvas.handleRemoteMove);
-    socket.on('draw:end',   canvas.handleRemoteEnd);
-    socket.on('draw:text',  canvas.handleRemoteText);
+    socket.on('draw:move', canvas.handleRemoteMove);
+    socket.on('draw:end', canvas.handleRemoteEnd);
+    socket.on('draw:text', canvas.handleRemoteText);
     socket.on('draw:clear', () => canvas.clearCanvas(false));
-    socket.on('draw:undo',  ({ snapshot }) => snapshot && canvas.restoreCanvas(snapshot));
-    socket.on('draw:redo',  ({ snapshot }) => snapshot && canvas.restoreCanvas(snapshot));
+    socket.on('draw:undo', ({ snapshot }) => snapshot && canvas.restoreCanvas(snapshot));
+    socket.on('draw:redo', ({ snapshot }) => snapshot && canvas.restoreCanvas(snapshot));
     socket.on('draw:sync_state', ({ canvasData }) => canvasData && canvas.restoreCanvas(canvasData));
 
     // Chat
@@ -120,9 +123,9 @@ export default function Room() {
     socket.on('game:sync', () => setShowGame(true));
 
     return () => {
-      ['connect','disconnect','room:joined','room:user_joined','room:user_left',
-       'draw:start','draw:move','draw:end','draw:text','draw:clear','draw:undo','draw:redo',
-       'draw:sync_state','chat:message','reaction:show','settings:updated','error','game:sync',
+      ['connect', 'disconnect', 'room:joined', 'room:user_joined', 'room:user_left',
+        'draw:start', 'draw:move', 'draw:end', 'draw:text', 'draw:clear', 'draw:undo', 'draw:redo',
+        'draw:sync_state', 'chat:message', 'reaction:show', 'settings:updated', 'error', 'game:sync',
       ].forEach(e => socket.off(e));
     };
   }, [socket, canvas, me, roomId]);
@@ -153,132 +156,170 @@ export default function Room() {
 
   if (loading) {
     return (
-      <div className={styles.loading}>
-        <div className="spinner" style={{ width:40, height:40 }} />
-        <p>Joining room...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-brand-dark text-white">
+        <div className="w-12 h-12 border-4 border-brand-accent/20 border-t-brand-accent rounded-full animate-spin mb-4" />
+        <p className="text-white/60 font-medium tracking-wide">Connecting to room...</p>
       </div>
     );
   }
 
   return (
-    <div className={styles.room}>
+    <div className="flex flex-col h-screen bg-[#111117] overflow-hidden">
       {/* ── Top bar ─────────────────────────────────────── */}
-      <header className={styles.topBar}>
-        <div className={styles.topLeft}>
-          {/* Logo back */}
-          <button className="btn-icon" onClick={leave} title="Leave room">
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M19 12H5M5 12l7-7M5 12l7 7" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+      <header className="h-[60px] flex-shrink-0 flex items-center justify-between px-4 bg-brand-dark/80 backdrop-blur-md border-b border-white/5 z-20">
 
-          <div className={styles.roomName}>{room?.name}</div>
-
-          {/* Code chip */}
-          <button className={styles.codeChip} onClick={copyCode} title="Copy room code">
-            <span>{room?.code}</span>
-            <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-            </svg>
-          </button>
-
-          {/* Connection indicator */}
-          <div className={`${styles.connDot} ${connected ? styles.connOk : styles.connErr}`}
-               title={connected ? 'Connected' : 'Disconnected'} />
-        </div>
-
-        <div className={styles.topCenter}>
-          {/* User avatars */}
-          <div className={styles.avatarStack}>
-            {users.slice(0, 6).map(u => (
-              <div key={u.socketId} className={styles.miniAvatar}
-                   style={{ background: u.color || '#00FFBF' }}
-                   title={u.username || '?'}>
-                {(u.username || '?')[0].toUpperCase()}
-              </div>
-            ))}
-            {users.length > 6 && <div className={styles.miniAvatar} style={{ background:'#333' }}>+{users.length - 6}</div>}
-          </div>
-        </div>
-
-        <div className={styles.topRight}>
-          {/* Game mode */}
+        {/* Left: Leave, Name, Code */}
+        <div className="flex items-center gap-3">
           <button
-            className={`btn btn-ghost ${styles.topBtn} ${showGame ? styles.topBtnActive : ''}`}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-all outline-none"
+            onClick={leave}
+            title="Leave room"
+          >
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path d="M19 12H5M5 12l7-7M5 12l7 7" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div className="px-3 border-l border-white/10 hidden sm:block">
+            <h1 className="text-[15px] font-bold text-white/90 truncate max-w-[200px]">{room?.name}</h1>
+          </div>
+
+          <button
+            className="flex items-center gap-2 px-3 py-1.5 ml-2 bg-brand-accent/10 border border-brand-accent/20 text-brand-accent rounded-lg text-xs font-bold tracking-widest hover:bg-brand-accent/20 transition-all group"
+            onClick={copyCode}
+            title="Copy room code"
+          >
+            <span>{room?.code}</span>
+            <svg className="opacity-50 group-hover:opacity-100 transition-opacity" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+            </svg>
+          </button>
+
+          <div
+            className={`w-2.5 h-2.5 rounded-full ml-3 ${connected ? 'bg-brand-accent shadow-[0_0_10px_rgba(0,255,191,0.5)]' : 'bg-brand-red shadow-[0_0_10px_rgba(255,107,107,0.5)]'}`}
+            title={connected ? 'Connected' : 'Disconnected'}
+          />
+        </div>
+
+        {/* Center: Avatars */}
+        <div className="hidden md:flex items-center justify-center -space-x-2">
+          {users.slice(0, 6).map(u => (
+            <div
+              key={u.socketId}
+              className="w-8 h-8 rounded-full border-2 border-brand-dark flex items-center justify-center text-xs font-bold text-brand-dark shadow-sm z-10 hover:z-20 hover:-translate-y-1 transition-transform"
+              style={{ background: u.color || '#00FFBF' }}
+              title={u.username || '?'}
+            >
+              {(u.username || '?')[0].toUpperCase()}
+            </div>
+          ))}
+          {users.length > 6 && (
+            <div className="w-8 h-8 rounded-full border-2 border-brand-dark bg-white/20 flex items-center justify-center text-[10px] font-bold text-white z-0">
+              +{users.length - 6}
+            </div>
+          )}
+        </div>
+
+        {/* Right: Toggles */}
+        <div className="flex items-center gap-2">
+          {/* Game Toggle */}
+          <button
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all border ${showGame
+                ? 'bg-brand-purple text-white border-brand-purple shadow-[0_0_15px_rgba(162,155,254,0.3)]'
+                : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:text-white'
+              }`}
             onClick={() => setShowGame(g => !g)}
             title="Skribbl game mode"
           >
-            🎮 Game
+            <span>🎮</span>
+            <span className="hidden sm:inline">Game</span>
           </button>
 
-          {/* Panel toggles */}
+          <div className="w-px h-6 bg-white/10 mx-1" />
+
+          {/* Users Panel Toggle */}
           <button
-            className={`btn-icon ${panel === 'users' ? 'active' : ''}`}
+            className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${panel === 'users' ? 'bg-brand-accent/15 text-brand-accent' : 'text-white/50 hover:bg-white/10 hover:text-white'
+              }`}
             onClick={() => setPanel(p => p === 'users' ? null : 'users')}
             title="Participants"
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
             </svg>
           </button>
 
+          {/* Chat Panel Toggle */}
           <button
-            className={`btn-icon ${panel === 'chat' ? 'active' : ''}`}
+            className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${panel === 'chat' ? 'bg-brand-accent/15 text-brand-accent' : 'text-white/50 hover:bg-white/10 hover:text-white'
+              }`}
             onClick={() => setPanel(p => p === 'chat' ? null : 'chat')}
             title="Chat"
           >
-            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+            <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
             </svg>
           </button>
         </div>
       </header>
 
-      {/* ── Main layout ─────────────────────────────────── */}
-      <div className={styles.main}>
-        <Toolbar {...canvas} />
+      {/* ── Main Layout (Canvas + Sidebar) ──────────────── */}
+      <div className="flex flex-1 overflow-hidden relative">
 
-        <div className={styles.canvasWrap}>
+        {/* Toolbar */}
+        <div className="absolute left-4 top-4 z-20">
+          <Toolbar {...canvas} />
+        </div>
+
+        {/* Canvas Wrap */}
+        <div className="flex-1 relative cursor-crosshair">
           <Canvas {...canvas} socket={socket} roomId={roomId} />
 
-          {/* Game mode overlay */}
+          {/* Skribbl Game Overlay */}
           {showGame && (
-            <GameMode
-              socket={socket}
-              roomId={roomId}
-              username={user?.username}
-              isHost={isHost}
-              onDrawingLock={setGameLocked}
-              onClose={() => setShowGame(false)}
-            />
+            <div className="absolute top-4 right-4 z-20 shadow-2xl animate-[slideInRight_0.4s_ease-out]">
+              <GameMode
+                socket={socket}
+                roomId={roomId}
+                username={user?.username}
+                isHost={isHost}
+                onDrawingLock={setGameLocked}
+                onClose={() => setShowGame(false)}
+              />
+            </div>
           )}
 
-          {/* Reactions */}
+          {/* Reaction Burst */}
           <ReactionBurst reactions={reactions} />
         </div>
 
-        {/* Side panels */}
-        {panel === 'chat' && (
-          <ChatPanel
-            messages={messages}
-            socket={socket}
-            roomId={roomId}
-            username={user?.username}
-            userColor={me?.color}
-          />
+        {/* Side Panels */}
+        {panel && (
+          <div className="w-[320px] h-full flex-shrink-0 border-l border-white/5 bg-brand-dark/95 backdrop-blur-xl relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-[slideInRight_0.3s_cubic-bezier(0.4,0,0.2,1)]">
+            {panel === 'chat' && (
+              <ChatPanel
+                messages={messages}
+                socket={socket}
+                roomId={roomId}
+                username={user?.username}
+                userColor={me?.color}
+              />
+            )}
+            {panel === 'users' && (
+              <UserList
+                users={users}
+                mySocketId={socket?.id}
+                isHost={isHost}
+                socket={socket}
+                roomId={roomId}
+              />
+            )}
+          </div>
         )}
-        {panel === 'users' && (
-          <UserList
-            users={users}
-            mySocketId={socket?.id}
-            isHost={isHost}
-            socket={socket}
-            roomId={roomId}
-          />
-        )}
+
       </div>
     </div>
   );

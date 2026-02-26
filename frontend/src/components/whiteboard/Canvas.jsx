@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from 'react';
-import styles from './Canvas.module.css';
 
 const CURSOR_FADE = 3500;
 
@@ -9,11 +8,11 @@ export default function Canvas({
   bg, rainbowMode,
   socket, roomId,
 }) {
-  const wrapRef     = useRef(null);
-  const canvasRef   = useRef(null);
-  const cursorRef   = useRef(null);
-  const cursorsMap  = useRef(new Map());
-  const rafRef      = useRef(null);
+  const wrapRef = useRef(null);
+  const canvasRef = useRef(null);
+  const cursorRef = useRef(null);
+  const cursorsMap = useRef(new Map());
+  const rafRef = useRef(null);
 
   // ── Mount canvas ─────────────────────────────────────────
   const setCanvas = useCallback((el) => {
@@ -111,19 +110,26 @@ export default function Canvas({
     const canvas = canvasRef.current;
     if (!canvas || !socket) return;
     const rect = canvas.getBoundingClientRect();
-    const src  = e.touches?.[0] || e;
+    const src = e.touches?.[0] || e;
     const x = (src.clientX - rect.left) * (canvas.width / rect.width);
-    const y = (src.clientY - rect.top)  * (canvas.height / rect.height);
+    const y = (src.clientY - rect.top) * (canvas.height / rect.height);
     socket.emit('cursor:move', { roomId, x, y, cw: canvas.width, ch: canvas.height });
   }, [drawOnCanvas, socket, roomId]);
 
-  const bgClass = bg === 'grid' ? styles.bgGrid : bg === 'dots' ? styles.bgDots : styles.bgBlank;
+  const bgClass = bg === 'grid'
+    ? 'bg-[url("data:image/svg+xml,%3Csvg%20width=%2240%22%20height=%2240%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath%20d=%22M%2040%200%20L%200%200%200%2040%22%20fill=%22none%22%20stroke=%22rgba(255,255,255,0.05)%22%20stroke-width=%221%22/%3E%3C/svg%3E")]'
+    : bg === 'dots'
+      ? 'bg-[url("data:image/svg+xml,%3Csvg%20width=%2220%22%20height=%2220%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle%20cx=%222%22%20cy=%222%22%20r=%221%22%20fill=%22rgba(255,255,255,0.1)%22/%3E%3C/svg%3E")]'
+      : 'bg-transparent';
 
   return (
-    <div ref={wrapRef} className={`${styles.wrap} ${bgClass} ${rainbowMode ? 'rainbow-mode' : ''}`}>
+    <div
+      ref={wrapRef}
+      className={`absolute inset-0 w-full h-full overflow-hidden ${bgClass} ${rainbowMode ? 'rainbow-mode' : ''}`}
+    >
       <canvas
         ref={setCanvas}
-        className={styles.canvas}
+        className="absolute inset-0 w-full h-full touch-none z-[1]"
         onMouseDown={startDrawing}
         onMouseMove={onMove}
         onMouseUp={stopDrawing}
@@ -132,7 +138,10 @@ export default function Canvas({
         onTouchMove={onMove}
         onTouchEnd={stopDrawing}
       />
-      <canvas ref={setCursor} className={styles.cursorCanvas} />
+      <canvas
+        ref={setCursor}
+        className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+      />
     </div>
   );
 }

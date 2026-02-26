@@ -1,32 +1,31 @@
 import { useState } from 'react';
-import styles from './Toolbar.module.css';
 
 const COLORS = [
-  '#ffffff','#000000','#FF6B6B','#00FFBF','#9B72FF','#FFD93D',
-  '#4ECDC4','#FD79A8','#A29BFE','#FF7675','#00B894','#6C5CE7',
-  '#FDCB6E','#74B9FF','#E17055','#55EFC4',
+  '#ffffff', '#000000', '#FF6B6B', '#00FFBF', '#9B72FF', '#FFD93D',
+  '#4ECDC4', '#FD79A8', '#A29BFE', '#FF7675', '#00B894', '#6C5CE7',
+  '#FDCB6E', '#74B9FF', '#E17055', '#55EFC4',
 ];
 
 const TOOLS = [
-  { id: 'pencil',   icon: '✏️', label: 'Pencil (P)' },
-  { id: 'eraser',   icon: '⬜', label: 'Eraser (E)' },
+  { id: 'pencil', icon: '✏️', label: 'Pencil (P)' },
+  { id: 'eraser', icon: '⬜', label: 'Eraser (E)' },
   { separator: true },
-  { id: 'line',     icon: '╱', label: 'Line (L)' },
-  { id: 'arrow',    icon: '→', label: 'Arrow (A)' },
-  { id: 'rect',     icon: '▭', label: 'Rectangle (R)' },
-  { id: 'circle',   icon: '○', label: 'Circle (C)' },
-  { id: 'diamond',  icon: '◇', label: 'Diamond (D)' },
+  { id: 'line', icon: '╱', label: 'Line (L)' },
+  { id: 'arrow', icon: '→', label: 'Arrow (A)' },
+  { id: 'rect', icon: '▭', label: 'Rectangle (R)' },
+  { id: 'circle', icon: '○', label: 'Circle (C)' },
+  { id: 'diamond', icon: '◇', label: 'Diamond (D)' },
   { id: 'triangle', icon: '△', label: 'Triangle' },
   { separator: true },
-  { id: 'text',     icon: 'T',  label: 'Text (T)' },
-  { id: 'fill',     icon: '🪣', label: 'Fill (F)' },
+  { id: 'text', icon: 'T', label: 'Text (T)' },
+  { id: 'fill', icon: '🪣', label: 'Fill (F)' },
 ];
 
 const SIZES = [2, 4, 8, 14, 24];
-const BGS   = [
-  { id:'blank', label:'None', icon:'⬜' },
-  { id:'grid',  label:'Grid', icon:'#' },
-  { id:'dots',  label:'Dots', icon:'·' },
+const BGS = [
+  { id: 'blank', label: 'None', icon: '⬜' },
+  { id: 'grid', label: 'Grid', icon: '#' },
+  { id: 'dots', label: 'Dots', icon: '·' },
 ];
 
 export default function Toolbar({
@@ -54,92 +53,108 @@ export default function Toolbar({
   };
 
   return (
-    <aside className={styles.toolbar}>
+    <aside className="w-16 bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col items-center py-4 gap-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-30 max-h-[calc(100vh-100px)] overflow-y-auto hide-scrollbar">
+
       {/* Tools */}
       {TOOLS.map((t, i) =>
         t.separator ? (
-          <div key={i} className={styles.sep} />
+          <div key={i} className="w-8 h-px bg-white/10 my-1" />
         ) : (
           <button
             key={t.id}
-            className={`${styles.toolBtn} ${tool === t.id ? styles.active : ''}`}
+            className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all peer group relative ${tool === t.id
+                ? 'bg-brand-accent text-brand-dark shadow-[0_0_15px_rgba(0,255,191,0.3)] scale-105'
+                : 'text-white/60 hover:bg-white/10 hover:text-white'
+              }`}
             onClick={() => setTool(t.id)}
             data-tip={t.label}
           >
-            <span className={styles.toolIcon}>{t.icon}</span>
+            <span>{t.icon}</span>
+            {/* Custom Tailwind Tooltip */}
+            <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+              {t.label}
+            </span>
           </button>
         )
       )}
 
-      <div className={styles.sep} />
+      <div className="w-8 h-px bg-white/10 my-1" />
 
       {/* Undo / Redo */}
-      <button className={styles.toolBtn} onClick={undo} data-tip="Undo (Ctrl+Z)">
-        <span className={styles.toolIcon}>↩</span>
+      <button className="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" onClick={undo}>
+        <span>↩</span>
+        <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">Undo</span>
       </button>
-      <button className={styles.toolBtn} onClick={redo} data-tip="Redo (Ctrl+Y)">
-        <span className={styles.toolIcon}>↪</span>
+      <button className="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" onClick={redo}>
+        <span>↪</span>
+        <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">Redo</span>
       </button>
-      <button className={styles.toolBtn} onClick={() => { if (confirm('Clear canvas?')) clearCanvas(); }} data-tip="Clear all">
-        <span className={styles.toolIcon}>🗑</span>
+      <button className="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-brand-red/60 hover:bg-brand-red/20 hover:text-brand-red transition-all group relative" onClick={() => { if (window.confirm('Clear canvas?')) clearCanvas(); }}>
+        <span>🗑</span>
+        <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-brand-red text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">Clear all</span>
       </button>
 
-      <div className={styles.sep} />
+      <div className="w-8 h-px bg-white/10 my-1" />
 
       {/* Size */}
-      <div className={styles.sizeGroup}>
+      <div className="w-10 py-2 bg-black/20 rounded-xl flex flex-col items-center gap-2 border border-white/5">
         {SIZES.map(s => (
           <button
             key={s}
-            className={`${styles.sizeBtn} ${size === s ? styles.active : ''}`}
+            className={`w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors ${size === s ? 'bg-white/10 ring-1 ring-white/20' : ''}`}
             onClick={() => setSize(s)}
-            data-tip={`${s}px`}
+            title={`${s}px`}
           >
-            <div className={styles.sizeDot} style={{ width: Math.min(s, 20), height: Math.min(s, 20), background: color }} />
+            <div className="rounded-full" style={{ width: Math.min(s, 16), height: Math.min(s, 16), background: color }} />
           </button>
         ))}
       </div>
 
-      <div className={styles.sep} />
+      <div className="w-8 h-px bg-white/10 my-1" />
 
       {/* Color swatches */}
-      <div className={styles.colorGrid}>
+      <div className="grid grid-cols-2 gap-1.5 w-10">
         {COLORS.map(c => (
           <button
             key={c}
-            className={`${styles.swatch} ${color === c ? styles.swatchActive : ''}`}
+            className={`w-4 h-4 rounded-full transition-transform ${color === c ? 'scale-125 ring-2 ring-white ring-offset-2 ring-offset-brand-card' : 'hover:scale-110'}`}
             style={{ background: c }}
             onClick={() => handleColorPick(c)}
           />
         ))}
         {/* Custom color */}
-        <label className={styles.customColor} data-tip="Custom color">
+        <label className="w-4 h-4 rounded-full bg-[conic-gradient(red,yellow,green,cyan,blue,magenta,red)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative group">
           <input
             type="color"
             value={customColor}
             onChange={e => { setCustomColor(e.target.value); setColor(e.target.value); }}
-            style={{ opacity:0, position:'absolute', width:1, height:1 }}
+            className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
           />
-          <span>+</span>
         </label>
       </div>
 
-      <div className={styles.sep} />
+      <div className="w-8 h-px bg-white/10 my-1" />
 
       {/* Background */}
-      <div style={{ position:'relative' }}>
-        <button className={styles.toolBtn} onClick={() => setShowBg(b => !b)} data-tip="Background">
-          <span className={styles.toolIcon}>🖼</span>
+      <div className="relative">
+        <button
+          className="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative"
+          onClick={() => setShowBg(b => !b)}
+        >
+          <span>🖼</span>
+          <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">Background</span>
         </button>
+
         {showBg && (
-          <div className={styles.bgMenu}>
+          <div className="absolute left-14 top-0 bg-brand-card border border-white/10 rounded-xl p-2 w-32 shadow-xl z-50 flex flex-col gap-1 animate-[slideInLeft_0.2s_ease-out]">
             {BGS.map(b => (
               <button
                 key={b.id}
-                className={`${styles.bgBtn} ${bg === b.id ? styles.active : ''}`}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${bg === b.id ? 'bg-brand-accent/20 text-brand-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  }`}
                 onClick={() => { setBg(b.id); setShowBg(false); }}
               >
-                <span className={styles.bgIcon}>{b.icon}</span>
+                <span>{b.icon}</span>
                 <span>{b.label}</span>
               </button>
             ))}
@@ -148,8 +163,9 @@ export default function Toolbar({
       </div>
 
       {/* Export */}
-      <button className={styles.toolBtn} onClick={exportPNG} data-tip="Export PNG">
-        <span className={styles.toolIcon}>📤</span>
+      <button className="w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative mt-auto" onClick={exportPNG}>
+        <span>📤</span>
+        <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">Export PNG</span>
       </button>
     </aside>
   );

@@ -1,25 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
-import styles from './GameMode.module.css';
 
 export default function GameMode({ socket, roomId, username, isHost, onDrawingLock, onClose }) {
-  const [phase, setPhase]         = useState('lobby'); // lobby|choosing|drawing|turnEnd|over
-  const [players, setPlayers]     = useState([]);
-  const [drawer, setDrawer]       = useState('');
+  const [phase, setPhase] = useState('lobby'); // lobby|choosing|drawing|turnEnd|over
+  const [players, setPlayers] = useState([]);
+  const [drawer, setDrawer] = useState('');
   const [drawerSid, setDrawerSid] = useState('');
   const [maskedWord, setMaskedWord] = useState('');
-  const [myWord, setMyWord]       = useState('');
-  const [timer, setTimer]         = useState(0);
-  const [maxTime, setMaxTime]     = useState(80);
+  const [myWord, setMyWord] = useState('');
+  const [timer, setTimer] = useState(0);
+  const [maxTime, setMaxTime] = useState(80);
   const [wordChoices, setWordChoices] = useState([]);
-  const [guessLog, setGuessLog]   = useState([]);
+  const [guessLog, setGuessLog] = useState([]);
   const [guessInput, setGuessInput] = useState('');
   const [youGuessed, setYouGuessed] = useState(false);
-  const [turnWord, setTurnWord]   = useState('');
-  const [round, setRound]         = useState(1);
+  const [turnWord, setTurnWord] = useState('');
+  const [round, setRound] = useState(1);
   const [maxRounds, setMaxRounds] = useState(3);
-  const [settings, setSettings]   = useState({ rounds: 3, turnTime: 80 });
-  const logRef   = useRef(null);
-  const logIdRef  = useRef(0);
+  const [settings, setSettings] = useState({ rounds: 3, turnTime: 80 });
+  const logRef = useRef(null);
+  const logIdRef = useRef(0);
 
   const amDrawing = drawerSid === socket?.id && phase === 'drawing';
 
@@ -84,7 +83,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     });
 
     socket.on('game:over', ({ players: p }) => {
-      setPlayers([...p].sort((a,b) => b.score - a.score));
+      setPlayers([...p].sort((a, b) => b.score - a.score));
       setPhase('over');
     });
 
@@ -92,7 +91,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
 
     // Restore state after refresh
     socket.on('game:sync', ({ status, players: p, round: r, maxRounds: mr, turnTime: tt,
-                              drawer: d, drawerSocketId: dsid, shown, wordLen, word }) => {
+      drawer: d, drawerSocketId: dsid, shown, wordLen, word }) => {
       setPlayers(p); setRound(r); setMaxRounds(mr); setMaxTime(tt);
       setDrawer(d); setDrawerSid(dsid); setYouGuessed(false);
 
@@ -108,9 +107,9 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     });
 
     return () => {
-      ['game:started','game:choosing','game:pickWord','game:youDraw','game:roundStart',
-       'game:tick','game:hint','game:correctGuess','game:youGuessed','game:wrongGuess',
-       'game:turnEnd','game:over','game:stopped','game:sync'].forEach(e => socket.off(e));
+      ['game:started', 'game:choosing', 'game:pickWord', 'game:youDraw', 'game:roundStart',
+        'game:tick', 'game:hint', 'game:correctGuess', 'game:youGuessed', 'game:wrongGuess',
+        'game:turnEnd', 'game:over', 'game:stopped', 'game:sync'].forEach(e => socket.off(e));
     };
   }, [socket]);
 
@@ -121,8 +120,8 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   const addLog = (type, text) => { logIdRef.current += 1; setGuessLog(g => [...g, { type, text, id: logIdRef.current }]); };
 
   const startGame = () => socket?.emit('game:start', { roomId, ...settings });
-  const stopGame  = () => socket?.emit('game:stop', { roomId });
-  const pickWord  = (w) => { socket?.emit('game:pickWord', { roomId, word: w }); setWordChoices([]); };
+  const stopGame = () => socket?.emit('game:stop', { roomId });
+  const pickWord = (w) => { socket?.emit('game:pickWord', { roomId, word: w }); setWordChoices([]); };
   const sendGuess = () => {
     if (!guessInput.trim()) return;
     socket?.emit('game:guess', { roomId, guess: guessInput });
@@ -135,12 +134,18 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   // ── Word picking overlay ─────────────────────────────────
   if (phase === 'choosing' && wordChoices.length > 0) {
     return (
-      <div className={styles.overlay}>
-        <div className={styles.modal}>
-          <div className={styles.chooseTitle}>🎨 Pick a word to draw</div>
-          <div className={styles.wordChoices}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s]">
+        <div className="bg-brand-card border-2 border-brand-accent/30 p-8 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[320px] animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]">
+          <div className="text-2xl mb-6">🎨 <span className="font-display font-bold text-white">Pick a word</span></div>
+          <div className="flex flex-col gap-3 w-full">
             {wordChoices.map(w => (
-              <button key={w} className={styles.wordChoice} onClick={() => pickWord(w)}>{w}</button>
+              <button
+                key={w}
+                className="w-full py-4 px-6 bg-white/5 border border-white/10 rounded-xl text-lg font-bold text-brand-accent hover:bg-brand-accent hover:text-brand-dark transition-all transform hover:scale-105 shadow-md flex justify-center uppercase tracking-wider"
+                onClick={() => pickWord(w)}
+              >
+                {w}
+              </button>
             ))}
           </div>
         </div>
@@ -151,40 +156,69 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   // ── Lobby ───────────────────────────────────────────────
   if (phase === 'lobby') {
     return (
-      <div className={styles.overlay}>
-        <div className={styles.modal}>
-          <div className={styles.modalHeader}>
-            <span className={styles.gameIcon}>🎮</span>
-            <h2 className={styles.modalTitle}>Skribbl Mode</h2>
-            <button className={styles.closeX} onClick={onClose}>×</button>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fadeIn_0.2s]">
+        <div className="bg-brand-card border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">🎮</span>
+              <h2 className="text-2xl font-display font-bold text-white">Skribbl Mode</h2>
+            </div>
+            <button
+              className="text-white/40 hover:text-white transition-colors"
+              onClick={onClose}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <p className={styles.modalDesc}>One draws, everyone guesses. Fastest guess = most points!</p>
+
+          <p className="text-sm text-white/60 mb-8 leading-relaxed">
+            One player draws, everyone else guesses the word in the chat. The faster you guess, the more points you earn!
+          </p>
 
           {isHost && (
-            <div className={styles.settingsRow}>
-              <div>
-                <label className="label">Rounds</label>
-                <select className="input" value={settings.rounds}
-                  onChange={e => setSettings(s => ({ ...s, rounds: +e.target.value }))}>
-                  {[2,3,4,5,6].map(n => <option key={n} value={n}>{n}</option>)}
+            <div className="flex gap-4 mb-8">
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1.5">Rounds</label>
+                <select
+                  className="w-full bg-brand-dark/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-accent transition-all cursor-pointer"
+                  value={settings.rounds}
+                  onChange={e => setSettings(s => ({ ...s, rounds: +e.target.value }))}
+                >
+                  {[2, 3, 4, 5, 6].map(n => <option key={n} value={n}>{n}</option>)}
                 </select>
               </div>
-              <div>
-                <label className="label">Draw time</label>
-                <select className="input" value={settings.turnTime}
-                  onChange={e => setSettings(s => ({ ...s, turnTime: +e.target.value }))}>
-                  {[60,80,100,120].map(n => <option key={n} value={n}>{n}s</option>)}
+              <div className="flex-1">
+                <label className="block text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1.5">Draw time</label>
+                <select
+                  className="w-full bg-brand-dark/50 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-accent transition-all cursor-pointer"
+                  value={settings.turnTime}
+                  onChange={e => setSettings(s => ({ ...s, turnTime: +e.target.value }))}
+                >
+                  {[60, 80, 100, 120].map(n => <option key={n} value={n}>{n}s</option>)}
                 </select>
               </div>
             </div>
           )}
 
-          <div className={styles.modalActions}>
-            <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
-            {isHost
-              ? <button className="btn btn-primary" onClick={startGame}>Start Game →</button>
-              : <p className={styles.waitMsg}>Waiting for host to start...</p>
-            }
+          <div className="flex justify-between items-center">
+            <button className="text-sm font-semibold text-white/50 hover:text-white transition-colors" onClick={onClose}>
+              Cancel
+            </button>
+            {isHost ? (
+              <button
+                className="bg-brand-purple hover:bg-[#8D5FFF] text-white font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg hover:shadow-[0_0_20px_rgba(162,155,254,0.4)] flex items-center gap-2 group"
+                onClick={startGame}
+              >
+                Start Game <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </button>
+            ) : (
+              <p className="text-sm text-brand-yellow/80 font-medium flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-brand-yellow animate-pulse" />
+                Waiting for host...
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -194,25 +228,40 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   // ── Game Over ────────────────────────────────────────────
   if (phase === 'over') {
     return (
-      <div className={styles.overlay}>
-        <div className={styles.modal}>
-          <div className={styles.overHeader}>
-            <div className={styles.trophy}>🏆</div>
-            <h2 className={styles.modalTitle}>Game Over!</h2>
-            {players[0] && <p className={styles.winner}>{players[0].username} wins with {players[0].score} pts!</p>}
-          </div>
-          <div className={styles.finalBoard}>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-[fadeIn_0.3s]">
+        <div className="bg-brand-card border-2 border-brand-yellow/30 p-10 rounded-3xl shadow-[0_20px_60px_rgba(255,217,61,0.15)] max-w-md w-full animate-[slideInUp_0.4s_cubic-bezier(0.34,1.56,0.64,1)] text-center relative overflow-hidden">
+
+          {/* Confetti effect background (handled by index.css but we add decorative orbs) */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-brand-yellow/10 rounded-full blur-[60px] pointer-events-none" />
+
+          <div className="text-7xl mb-4 animate-[reactionFloat_2s_ease-out_forwards]">🏆</div>
+          <h2 className="text-4xl font-display font-black text-white mb-2 tracking-tight">Game Over!</h2>
+
+          {players[0] && (
+            <p className="text-lg font-medium text-brand-yellow mb-8">
+              <strong className="text-white">{players[0].username}</strong> wins with {players[0].score} pts!
+            </p>
+          )}
+
+          <div className="flex flex-col gap-3 mb-10 text-left bg-brand-dark/50 p-4 rounded-2xl border border-white/5">
             {players.map((p, i) => (
-              <div key={p.socketId} className={`${styles.finalRow} ${i === 0 ? styles.firstPlace : ''}`}>
-                <span className={styles.rank}>#{i+1}</span>
-                <span className={styles.finalName}>{p.username}</span>
-                <span className={styles.finalScore}>{p.score} pts</span>
+              <div key={p.socketId} className={`flex items-center p-3 rounded-xl transition-colors ${i === 0 ? 'bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow' : 'bg-white/5 text-white/80'}`}>
+                <span className={`w-8 font-black ${i === 0 ? 'text-lg' : 'text-sm opacity-50'}`}>#{i + 1}</span>
+                <span className="flex-1 font-bold truncate pr-4">{p.username}</span>
+                <span className="font-mono">{p.score} pts</span>
               </div>
             ))}
           </div>
-          <div className={styles.modalActions}>
-            {isHost && <button className="btn btn-primary" onClick={startGame}>Play Again →</button>}
-            <button className="btn btn-ghost" onClick={() => { stopGame(); onClose?.(); }}>Back to Canvas</button>
+
+          <div className="flex gap-4">
+            <button className="flex-1 py-3 px-4 bg-white/5 hover:bg-white/10 text-white font-bold rounded-xl transition-all" onClick={() => { stopGame(); onClose?.(); }}>
+              Back to Canvas
+            </button>
+            {isHost && (
+              <button className="flex-1 py-3 px-4 bg-brand-accent hover:bg-brand-accentHover text-brand-dark shadow-lg shadow-brand-accent/20 font-bold rounded-xl transition-all" onClick={startGame}>
+                Play Again
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -221,80 +270,142 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
 
   // ── In-game HUD ──────────────────────────────────────────
   return (
-    <div className={styles.hud}>
+    <div className="w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl">
+
       {/* Turn end flash */}
       {phase === 'turnEnd' && (
-        <div className={styles.turnEndFlash}>
-          The word was <strong>{turnWord}</strong> — next round starting...
+        <div className="absolute inset-0 z-30 bg-brand-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-[fadeIn_0.2s]">
+          <span className="text-5xl mb-4">⏰</span>
+          <div className="text-lg text-white/80 mb-2">The word was</div>
+          <div className="text-3xl font-display font-black text-brand-accent tracking-widest uppercase mb-6">{turnWord}</div>
+          <div className="text-sm font-medium text-white/40 flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+            Next round starting...
+          </div>
         </div>
       )}
 
       {/* Timer bar */}
-      <div className={styles.timerBar}>
-        <div className={styles.timerFill} style={{ width:`${timerPct}%`, background: timerColor }} />
+      <div className="h-1.5 w-full bg-brand-dark">
+        <div
+          className="h-full transition-all duration-1000 ease-linear rounded-r-full"
+          style={{ width: `${timerPct}%`, backgroundColor: timerColor }}
+        />
       </div>
 
-      {/* HUD top */}
-      <div className={styles.hudTop}>
-        <span className={styles.hudRound}>Round {round}/{maxRounds}</span>
+      {/* HUD top (Word & Status) */}
+      <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden">
 
-        {/* Word */}
-        <div className={styles.hudWord}>
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-[10px] font-bold tracking-widest uppercase text-white/40 bg-white/5 px-2 py-0.5 rounded">
+            Round {round}/{maxRounds}
+          </span>
+          <div className="text-base font-black font-mono" style={{ color: timerColor }}>⏱ {timer}s</div>
+        </div>
+
+        {/* Word Display */}
+        <div className="flex justify-center mb-2 min-h-[40px] items-center">
           {amDrawing ? (
-            <span className={styles.drawWord}>Drawing: <strong>{myWord}</strong></span>
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-brand-yellow/80 font-bold uppercase tracking-wider mb-1">Draw this:</span>
+              <span className="text-2xl font-display font-black text-white tracking-widest uppercase">{myWord}</span>
+            </div>
           ) : youGuessed ? (
-            <span className={styles.guessedWord}>✅ {maskedWord}</span>
+            <div className="flex flex-col items-center animate-[fadeIn_0.3s]">
+              <span className="text-xs text-brand-accent/80 font-bold uppercase tracking-wider mb-1">You Guessed It!</span>
+              <span className="text-2xl font-display font-black text-brand-accent tracking-widest uppercase text-shadow-sm">{maskedWord}</span>
+            </div>
           ) : (
-            <span className={styles.blanks}>
+            <div className="flex gap-1 flex-wrap justify-center">
               {maskedWord.split('').map((c, i) => (
-                <span key={i} className={c === '_' ? styles.blank : c === ' ' ? styles.space : styles.revealedLetter}>
+                <span
+                  key={i}
+                  className={`flex items-center justify-center font-display font-bold uppercase text-xl
+                    ${c === '_' ? 'w-4 border-b-2 border-white/40 mb-1 mx-0.5'
+                      : c === ' ' ? 'w-4'
+                        : 'w-auto min-w-[16px] text-white'}`}
+                >
                   {c === '_' ? '' : c === ' ' ? '' : c}
                 </span>
               ))}
-            </span>
+            </div>
           )}
         </div>
 
-        <div className={styles.hudTimer} style={{ color: timerColor }}>⏱ {timer}s</div>
-        {isHost && <button className={`btn btn-ghost ${styles.stopBtn}`} onClick={stopGame}>■ Stop</button>}
+        {isHost && (
+          <button
+            className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors"
+            onClick={stopGame}
+          >
+            ■ Stop
+          </button>
+        )}
       </div>
 
       {/* Scoreboard */}
-      <div className={styles.scoreboard}>
-        {[...players].sort((a,b) => b.score - a.score).map((p, i) => (
-          <div key={p.socketId} className={`${styles.scoreRow} ${p.username === username ? styles.scoreMe : ''}`}>
-            <span className={styles.scoreRank}>#{i+1}</span>
-            <span className={styles.scoreName}>
+      <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar">
+        {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
+          <div
+            key={p.socketId}
+            className={`flex items-center gap-2 p-1.5 rounded-lg text-xs font-semibold
+              ${p.username === username ? 'bg-brand-accent/10 border border-brand-accent/20 text-brand-accent' : 'bg-white/5 text-white/70'}`}
+          >
+            <span className={`w-3 flex-shrink-0 text-[10px] ${i === 0 ? 'text-brand-yellow' : 'opacity-40'}`}>#{i + 1}</span>
+            <span className="flex-1 truncate">
               {p.username}
-              {p.socketId === drawerSid && <span className={styles.drawerTag}> ✏️</span>}
+              {p.socketId === drawerSid && <span className="ml-1 text-[10px]">✏️</span>}
             </span>
-            <span className={styles.scoreVal}>{p.score}</span>
+            <span className="font-mono">{p.score}</span>
           </div>
         ))}
       </div>
 
-      {/* Guess panel */}
-      <div className={styles.guessPanel}>
-        <div className={styles.guessLog} ref={logRef}>
-          {guessLog.slice(-10).map(g => (
-            <div key={g.id} className={`${styles.guessEntry} ${styles[g.type]}`}>{g.text}</div>
+      {/* Guess panel (Chat Log) */}
+      <div className="flex-1 min-h-[200px] flex flex-col bg-brand-dark/10">
+        <div className="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm hide-scrollbar" ref={logRef}>
+          {guessLog.slice(-15).map(g => (
+            <div
+              key={g.id}
+              className={`px-3 py-1.5 rounded-lg break-words animate-[fadeIn_0.2s_ease-out]
+                ${g.type === 'system' ? 'text-white/50 text-xs font-bold text-center my-2' : ''}
+                ${g.type === 'wrong' ? 'text-white/80 bg-white/5' : ''}
+                ${g.type === 'close' ? 'text-brand-yellow font-medium bg-brand-yellow/10 border border-brand-yellow/20' : ''}
+                ${g.type === 'hint' ? 'text-brand-purple font-medium bg-brand-purple/10 border border-brand-purple/20' : ''}
+                ${g.type === 'correct' ? 'text-brand-accent font-bold bg-brand-accent/10 border border-brand-accent/20 shadow-[0_0_10px_rgba(0,255,191,0.1)]' : ''}
+              `}
+            >
+              {g.text}
+            </div>
           ))}
         </div>
+
+        {/* Input */}
         {!amDrawing && phase === 'drawing' && !youGuessed && (
-          <div className={styles.guessInput}>
-            <input
-              className="input"
-              placeholder="Your guess..."
-              value={guessInput}
-              onChange={e => setGuessInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && sendGuess()}
-              autoFocus
-            />
-            <button className="btn btn-primary" onClick={sendGuess}>→</button>
+          <div className="p-3 bg-brand-dark pb-4">
+            <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent transition-all">
+              <input
+                className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none"
+                placeholder="Type your guess..."
+                value={guessInput}
+                onChange={e => setGuessInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && sendGuess()}
+                autoFocus
+              />
+              <button
+                className="px-4 text-brand-dark bg-brand-accent hover:bg-brand-accentHover font-bold transition-colors disabled:opacity-50"
+                onClick={sendGuess}
+                disabled={!guessInput.trim()}
+              >
+                →
+              </button>
+            </div>
           </div>
         )}
+
         {youGuessed && (
-          <div className={styles.guessedMsg}>🎉 Correct! Watch others guess.</div>
+          <div className="p-4 bg-brand-dark/80 text-center">
+            <div className="text-xs font-bold text-brand-accent uppercase tracking-wider">🎉 Correct! Watch others guess.</div>
+          </div>
         )}
       </div>
     </div>
