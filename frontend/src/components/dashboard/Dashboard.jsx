@@ -383,10 +383,10 @@ export default function Dashboard() {
                       >
                         {room.code}
                       </span>
-                      {!isMyRoom && room.hostName && (
+                      {!isOwner && activeTab === 'public' && room.hostName && (
                         <span className="text-[11px] text-white/30 font-medium">by {room.hostName}</span>
                       )}
-                      {isMyRoom && (
+                      {(isOwner || activeTab === 'my') && (
                         <span className="text-[11px] font-semibold text-white/30">
                           {timeAgo(room.lastActive || room.updatedAt)}
                         </span>
