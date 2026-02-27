@@ -273,16 +273,6 @@ export default function AuthPage() {
               </svg>
               GSUS2K
             </a>
-
-            <button
-              onClick={() => {
-                logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
-                openDonation();
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105"
-            >
-              <span>🥤</span> Cold coffee?
-            </button>
           </div>
 
           <p className="text-center text-[10px] text-white/15 mt-3">
@@ -307,7 +297,6 @@ export default function AuthPage() {
           to { opacity: 1; }
         }
       `}</style>
-
     </div>
   );
 }

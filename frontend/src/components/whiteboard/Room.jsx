@@ -63,6 +63,15 @@ export default function Room() {
   const webrtc = useWebRTC(socket, roomId, socket?.id);
 
   // 🕹️ Pac-Man easter egg: type "pacman" anywhere (not in an input, not during a game)
+  // Hide BMaC donation widget inside rooms — it's distracting during collaboration
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.id = 'bmc-hide-in-room';
+    style.textContent = '#bmc-wbtn { display: none !important; }';
+    document.head.appendChild(style);
+    return () => document.getElementById('bmc-hide-in-room')?.remove();
+  }, []);
+
   useEffect(() => {
     const SEQUENCE = 'pacman';
     const handler = (e) => {
