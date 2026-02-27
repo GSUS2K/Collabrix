@@ -28,7 +28,7 @@ export default function PacmanEasterEgg({ onClose }) {
 
                 {/* Game iframe */}
                 <iframe
-                    src="https://www.google.com/logos/2010/pacman10-i.html"
+                    src="https://freepacman.org/"
                     title="Pac-Man Easter Egg"
                     className="w-full"
                     style={{ height: 'calc(100% - 56px)', border: 'none', background: '#000' }}
