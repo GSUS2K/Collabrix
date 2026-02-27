@@ -52,13 +52,15 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       setPhase('choosing');
     });
 
-    socket.on('game:choosing', ({ drawer: d, drawerSocketId: dsid, round: r, maxRounds: mr }) => {
+    socket.on('game:choosing', ({ drawer: d, drawerSocketId: dsid, round: r, maxRounds: mr, words }) => {
       setDrawer(d); setDrawerSid(dsid); setRound(r); setMaxRounds(mr);
-      setMaskedWord(''); setMyWord(''); setWordChoices([]); setYouGuessed(false);
+      setMaskedWord(''); setMyWord(''); setYouGuessed(false);
+      setWordChoices(socket.id === dsid ? (words || []) : []);
       setPhase('choosing');
       addLog('system', `Round ${r}/${mr} — ${d} is picking a word...`);
     });
 
+    // Keep legacy listener just in case
     socket.on('game:pickWord', ({ words }) => setWordChoices(words));
 
     socket.on('game:youDraw', ({ word }) => {

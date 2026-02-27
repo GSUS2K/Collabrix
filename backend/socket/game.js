@@ -1,18 +1,30 @@
 const WORDS = [
-  'cat', 'dog', 'elephant', 'giraffe', 'penguin', 'dolphin', 'tiger', 'rabbit', 'monkey', 'shark',
-  'butterfly', 'octopus', 'kangaroo', 'crocodile', 'peacock', 'flamingo', 'hedgehog', 'cheetah',
-  'umbrella', 'guitar', 'telescope', 'bicycle', 'toothbrush', 'backpack', 'scissors', 'lantern',
-  'compass', 'suitcase', 'keyboard', 'microphone', 'trophy', 'hourglass', 'anchor', 'binoculars',
-  'pizza', 'sushi', 'burger', 'watermelon', 'popcorn', 'sandwich', 'spaghetti', 'donut', 'taco',
-  'cupcake', 'strawberry', 'pineapple', 'chocolate', 'broccoli', 'avocado', 'pancakes', 'pretzel',
-  'volcano', 'lighthouse', 'castle', 'pyramid', 'igloo', 'windmill', 'treehouse', 'skyscraper',
-  'waterfall', 'cave', 'airport', 'library', 'stadium', 'greenhouse', 'submarine', 'spaceship',
-  'swimming', 'dancing', 'climbing', 'fishing', 'painting', 'cooking', 'sleeping', 'laughing',
-  'jumping', 'reading', 'singing', 'skating', 'surfing', 'gardening', 'hiking', 'juggling',
-  'rainbow', 'thunder', 'snowflake', 'tornado', 'eclipse', 'meteor', 'glacier', 'canyon',
-  'coral', 'mushroom', 'cactus', 'bamboo', 'sunflower', 'seashell', 'starfish', 'avalanche',
-  'dragon', 'unicorn', 'robot', 'wizard', 'ninja', 'pirate', 'astronaut', 'mermaid',
-  'saxophone', 'accordion', 'harmonica', 'xylophone', 'bagpipes', 'ukulele', 'trombone',
+  // Easy/Basic
+  'cat', 'dog', 'sun', 'moon', 'star', 'tree', 'house', 'car', 'book', 'ball', 'apple', 'fish', 'bird', 'cup', 'hat', 'eye', 'hand', 'fire', 'water', 'sword', 'key', 'door', 'bed', 'box', 'shoe', 'ring', 'crown', 'boat', 'face', 'smile', 'boy', 'girl', 'baby', 'king', 'queen', 'clock', 'sock', 'mouse', 'bear', 'frog', 'duck', 'cow', 'pig', 'horse', 'sheep', 'lion', 'snake', 'crab',
+
+  // Medium/Objects
+  'airplane', 'guitar', 'camera', 'laptop', 'telephone', 'glasses', 'robot', 'rocket', 'train', 'truck', 'bicycle', 'motorcycle', 'helicopter', 'submarine', 'telescope', 'microscope', 'compass', 'flashlight', 'umbrella', 'backpack', 'suitcase', 'wallet', 'scissors', 'hammer', 'wrench', 'screwdriver', 'paintbrush', 'palette', 'easel', 'canvas', 'picture', 'frame', 'mirror', 'window', 'curtain', 'carpet', 'pillow', 'blanket', 'towel', 'soap', 'toothbrush', 'toothpaste', 'shampoo', 'brush', 'comb', 'perfume',
+
+  // Animals & Nature
+  'elephant', 'giraffe', 'penguin', 'dolphin', 'tiger', 'rabbit', 'monkey', 'shark', 'butterfly', 'octopus', 'kangaroo', 'crocodile', 'peacock', 'flamingo', 'hedgehog', 'cheetah', 'spider', 'scorpion', 'turtle', 'snail', 'sloth', 'panda', 'koala', 'gorilla', 'rhino', 'hippo', 'zebra', 'camel', 'llama', 'alpaca', 'ostrich', 'pelican', 'seagull', 'owl', 'eagle', 'hawk', 'falcon', 'woodpecker', 'parrot', 'toucan', 'iguana', 'chameleon',
+  'mountain', 'river', 'lake', 'ocean', 'beach', 'desert', 'forest', 'jungle', 'island', 'volcano', 'canyon', 'waterfall', 'cave', 'glacier', 'iceberg', 'tornado', 'hurricane', 'earthquake', 'tsunami', 'avalanche', 'snowflake', 'raindrop', 'rainbow', 'cloud', 'lightning', 'thunder', 'meteor', 'comet', 'asteroid', 'galaxy', 'universe', 'blackhole', 'planet', 'earth', 'mars', 'jupiter', 'saturn', 'venus',
+
+  // Food & Drink
+  'pizza', 'sushi', 'burger', 'sandwich', 'taco', 'burrito', 'hotdog', 'fries', 'spaghetti', 'noodles', 'soup', 'salad', 'steak', 'chicken', 'bacon', 'egg', 'cheese', 'bread', 'butter', 'pancakes', 'waffle', 'cereal', 'toast', 'donut', 'cupcake', 'muffin', 'cookie', 'cake', 'pie', 'icecream', 'chocolate', 'candy', 'lollipop', 'marshmallow', 'popcorn', 'pretzel', 'chips', 'cracker',
+  'apple', 'banana', 'orange', 'grape', 'strawberry', 'blueberry', 'raspberry', 'blackberry', 'watermelon', 'melon', 'pineapple', 'mango', 'peach', 'pear', 'plum', 'cherry', 'lemon', 'lime', 'coconut', 'kiwi', 'avocado', 'tomato', 'potato', 'carrot', 'onion', 'garlic', 'broccoli', 'corn', 'mushroom', 'pepper', 'cucumber', 'lettuce', 'spinach',
+
+  // Actions/Verbs (Harder)
+  'swimming', 'dancing', 'climbing', 'fishing', 'painting', 'cooking', 'sleeping', 'laughing', 'crying', 'jumping', 'running', 'walking', 'reading', 'writing', 'singing', 'skating', 'surfing', 'gardening', 'hiking', 'juggling', 'magic', 'thinking', 'dreaming', 'flying', 'falling', 'driving', 'riding', 'shopping', 'cleaning', 'studying', 'playing',
+
+  // Places & Structures
+  'hospital', 'school', 'library', 'bank', 'police', 'firehouse', 'church', 'temple', 'museum', 'theater', 'cinema', 'restaurant', 'cafe', 'bakery', 'supermarket', 'mall', 'stadium', 'airport', 'station', 'port', 'factory', 'farm', 'zoo', 'park', 'playground', 'pool',
+  'castle', 'palace', 'fortress', 'tower', 'skyscraper', 'pyramid', 'lighthouse', 'windmill', 'igloo', 'tent', 'cabin', 'cottage', 'mansion', 'apartment', 'bridge', 'tunnel', 'monument', 'statue', 'fountain',
+
+  // Professions/People
+  'doctor', 'nurse', 'teacher', 'police', 'firefighter', 'astronaut', 'pilot', 'sailor', 'soldier', 'ninja', 'pirate', 'wizard', 'witch', 'vampire', 'zombie', 'ghost', 'alien', 'monster', 'superhero', 'villain', 'king', 'queen', 'prince', 'princess', 'knight', 'farmer', 'chef', 'baker', 'butcher', 'barber', 'painter', 'musician', 'singer', 'dancer', 'actor', 'clown', 'magician',
+
+  // Abstract/Misc (Hard)
+  'time', 'space', 'love', 'peace', 'war', 'music', 'art', 'science', 'history', 'math', 'language', 'dream', 'nightmare', 'idea', 'thought', 'memory', 'secret', 'shadow', 'reflection', 'echo', 'whisper', 'scream', 'silence', 'darkness', 'light', 'energy', 'power', 'magic', 'luck', 'fortune', 'danger', 'safety', 'friendship', 'family', 'birthday', 'holiday', 'vacation', 'party', 'celebration', 'festival', 'carnival', 'parade'
 ];
 
 const games = new Map();
@@ -132,9 +144,8 @@ function startTurn(io, roomId) {
     drawerSocketId: drawer.socketId,
     round: g.round,
     maxRounds: g.maxRounds,
+    words: words, // Send words to everyone; frontend will only show them to the drawer
   });
-
-  io.to(drawer.socketId).emit('game:pickWord', { words });
 
   g.chooseTimer = setTimeout(() => {
     const g2 = games.get(roomId);
