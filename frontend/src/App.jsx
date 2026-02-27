@@ -6,6 +6,23 @@ import { SocketProvider } from './context/SocketContext';
 import AuthPage from './components/auth/AuthPage';
 import Dashboard from './components/dashboard/Dashboard';
 import Room from './components/whiteboard/Room';
+import { initGA, logPageView } from './utils/analytics';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+
+// Initialize GA outside the component tree
+initGA();
+
+// Helper component to track page views
+const AnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    logPageView(location.pathname + location.search);
+  }, [location]);
+
+  return null;
+};
 
 // Use env variable or fallback for development
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_client_id_for_now';
@@ -41,6 +58,7 @@ export default function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AuthProvider>
         <BrowserRouter>
+          <AnalyticsTracker />
           <AppRoutes />
           <Toaster
             position="bottom-right"

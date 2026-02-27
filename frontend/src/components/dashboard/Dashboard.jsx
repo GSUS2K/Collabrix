@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+import { logEvent } from '../../utils/analytics';
 
 const COLORS = ['#00FFBF', '#FF6B6B', '#9B72FF', '#FFD93D', '#4ECDC4', '#FD79A8'];
 
@@ -189,6 +190,7 @@ export default function Dashboard() {
               href="https://buymeacoffee.com/GSUS2K"
               target="_blank"
               rel="noreferrer"
+              onClick={() => logEvent('Monetization', 'Click Buy Me A Coffee', 'Dashboard Header')}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-[10px] font-bold text-brand-yellow uppercase tracking-wider transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
             >
               <span className="text-sm">🥤</span> Cold Coffee (Max $5)

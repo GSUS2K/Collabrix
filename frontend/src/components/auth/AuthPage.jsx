@@ -4,6 +4,8 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
 import Spline from '@splinetool/react-spline';
 import toast from 'react-hot-toast';
+import { logEvent } from '../../utils/analytics';
+
 const CYCLING_WORDS = ['Together.', 'Creatively.', 'In Real-Time.', 'Effortlessly.', 'With Friends.'];
 
 const FEATURES = [
@@ -273,6 +275,7 @@ export default function AuthPage() {
                 href="https://buymeacoffee.com/GSUS2K"
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page')}
                 className="flex items-center gap-2 px-4 py-2 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
               >
                 <span>🥤</span> Buy me a cold coffee (Max $5)
