@@ -22,7 +22,7 @@ function ReactionBurst({ reactions }) {
         <div
           key={r.id}
           className="reaction-float"
-          style={{ left: r.x, top: r.y }}
+          style={{ left: `${r.x}%`, top: `${r.y}%` }}
         >
           {r.emoji}
           {r.username && (
@@ -155,7 +155,11 @@ export default function Room() {
     // Reactions
     socket.on('reaction:show', ({ emoji, x, y, username: u }) => {
       const id = Date.now() + Math.random();
-      setReactions(r => [...r, { id, emoji, x, y, username: u }]);
+      // Clamp coordinates to keep emojis on screen (prevents overflow spawning)
+      const safeX = Math.max(10, Math.min(x, 90));
+      const safeY = Math.max(10, Math.min(y, 90));
+
+      setReactions(r => [...r, { id, emoji, x: safeX, y: safeY, username: u }]);
       setTimeout(() => setReactions(r => r.filter(rx => rx.id !== id)), 2500);
     });
 

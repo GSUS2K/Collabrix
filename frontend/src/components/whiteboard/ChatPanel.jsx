@@ -48,7 +48,10 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
   };
 
   const sendReaction = (emoji) => {
-    socket?.emit('reaction:send', { roomId, emoji });
+    // Spawn between 10% and 90% width, starting at 90% height
+    const x = Math.floor(Math.random() * 80) + 10;
+    const y = 90;
+    socket?.emit('reaction:send', { roomId, emoji, x, y });
     setShowEmoji(false);
   };
 
