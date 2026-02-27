@@ -69,7 +69,7 @@ export default function Dashboard() {
   const handleLogoClick = () => {
     const next = logoClicks + 1;
     if (next === 5) {
-      toast('🕹️ Psst... type "pacman" anywhere on this page', {
+      toast('🌈 Psst... try the Konami code to unlock Rainbow Mode!', {
         icon: '🤫',
         duration: 4000,
         style: { background: '#1a1a2e', color: '#00FFBF', border: '1px solid rgba(0,255,191,0.2)', fontWeight: 600 },
