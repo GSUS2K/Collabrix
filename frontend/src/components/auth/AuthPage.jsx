@@ -270,12 +270,12 @@ export default function AuthPage() {
               </a>
 
               <a
-                href="https://buymeacoffee.com/GSUS2K" // Generic fallback link, user can change later
+                href="https://buymeacoffee.com/GSUS2K"
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-2 px-4 py-2 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
               >
-                <span>☕</span> Buy me a coffee
+                <span>🧊☕</span> Buy me a cold coffee (Max $5)
               </a>
             </div>
 
