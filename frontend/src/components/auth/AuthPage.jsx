@@ -8,7 +8,7 @@ const CYCLING_WORDS = ['Together.', 'Creatively.', 'In Real-Time.', 'Effortlessl
 
 const FEATURES = [
   { icon: '🎨', title: 'Draw & Paint', desc: 'Full brush toolkit, shapes, eraser, and fill.' },
-  { icon: '🎮', title: 'Play Games', desc: 'In-room Skribbl & Gartic Phone modes.' },
+  { icon: '🎮', title: 'Play Games', desc: 'Built-in Skribbl drawing game for your room.' },
   { icon: '📡', title: 'Live Together', desc: 'Real-time cursors, video & voice chat.' },
   { icon: '💬', title: 'Chat & React', desc: 'Emoji bursts, file attachments, live chat.' },
 ];
