@@ -228,7 +228,7 @@ export default function Room() {
       <header className="h-[60px] flex-shrink-0 flex items-center justify-between px-4 bg-brand-dark/80 backdrop-blur-md border-b border-white/5 z-20">
 
         {/* Left: Leave, Logo, Name, Code */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 select-none">
           <button
             className="w-9 h-9 flex items-center justify-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-all outline-none"
             onClick={leave}
