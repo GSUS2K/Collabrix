@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { logEvent } from '../../utils/analytics';
+import DonationModal from '../common/DonationModal';
 
 const COLORS = ['#00FFBF', '#FF6B6B', '#9B72FF', '#FFD93D', '#4ECDC4', '#FD79A8'];
 
@@ -28,6 +29,7 @@ export default function Dashboard() {
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
   const [newName, setNewName] = useState('');
+  const [showDonationModal, setShowDonationModal] = useState(false);
   const [isPublic, setIsPublic] = useState(false);
   const [roomPassword, setRoomPassword] = useState('');
   const [joinCode, setJoinCode] = useState('');
@@ -186,15 +188,15 @@ export default function Dashboard() {
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
               </svg>
             </a>
-            <a
-              href="https://buymeacoffee.com/GSUS2K"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => logEvent('Monetization', 'Click Buy Me A Coffee', 'Dashboard Header')}
+            <button
+              onClick={() => {
+                logEvent('Monetization', 'Click Buy Me A Coffee', 'Dashboard Header');
+                setShowDonationModal(true);
+              }}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-[10px] font-bold text-brand-yellow uppercase tracking-wider transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
             >
               <span className="text-sm">🥤</span> Cold Coffee (Max $5)
-            </a>
+            </button>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 pr-4 pl-1.5 hover:bg-white/10 transition-all cursor-default" style={{ borderColor: user?.color ? `${user.color}40` : '' }}>
             <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-brand-dark text-[11px]" style={{ background: user?.color || COLORS[0] }}>
@@ -548,6 +550,12 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      {/* Custom Global Modals */}
+      <DonationModal
+        isOpen={showDonationModal}
+        onClose={() => setShowDonationModal(false)}
+      />
     </div>
   );
 }
