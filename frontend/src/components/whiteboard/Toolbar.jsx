@@ -8,7 +8,7 @@ const COLORS = [
 
 const TOOLS = [
   { id: 'pencil', icon: '✏️', label: 'Pencil (P)' },
-  { id: 'eraser', icon: '⬜', label: 'Eraser (E)' },
+  { id: 'eraser', icon: '🧹', label: 'Eraser (E)' },
   { separator: true },
   { id: 'line', icon: '╱', label: 'Line (L)' },
   { id: 'arrow', icon: '→', label: 'Arrow (A)' },
