@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
 const CURSOR_FADE = 3500;
+const LASER_FADE = 2000;
 
 export default function Canvas({
   initCanvas, resizeCanvas,
@@ -13,6 +14,7 @@ export default function Canvas({
   const cursorRef = useRef(null);
   const cursorsMap = useRef(new Map());
   const rafRef = useRef(null);
+  const laserRef = useRef(null); // { x, y, updatedAt }
 
   // ── Mount canvas ─────────────────────────────────────────
   const setCanvas = useCallback((el) => {
@@ -56,6 +58,8 @@ export default function Canvas({
         const ctx = cc.getContext('2d');
         ctx.clearRect(0, 0, cc.width, cc.height);
         const now = Date.now();
+
+        // Draw remote cursors
         cursorsMap.current.forEach((c) => {
           const age = now - c.updatedAt;
           if (age > CURSOR_FADE) return;
@@ -84,6 +88,38 @@ export default function Canvas({
           ctx.fillText(c.username, lx + 6, ly + 1);
           ctx.globalAlpha = 1;
         });
+
+        // Draw LOCAL laser pointer dot (when laser tool active)
+        if (laserRef.current) {
+          const age = now - laserRef.current.updatedAt;
+          if (age < LASER_FADE) {
+            const alpha = Math.max(0, 1 - age / LASER_FADE);
+            const { x, y } = laserRef.current;
+            ctx.globalAlpha = alpha;
+
+            // Outer glow
+            const grd = ctx.createRadialGradient(x, y, 0, x, y, 24);
+            grd.addColorStop(0, 'rgba(255,80,80,0.6)');
+            grd.addColorStop(1, 'rgba(255,80,80,0)');
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.arc(x, y, 24, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Inner dot
+            ctx.fillStyle = '#FF5050';
+            ctx.shadowColor = '#FF5050';
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            ctx.globalAlpha = 1;
+          } else {
+            laserRef.current = null;
+          }
+        }
       }
       rafRef.current = requestAnimationFrame(tick);
     };
@@ -104,17 +140,25 @@ export default function Canvas({
     ro.observe(el.parentElement);
   }, []);
 
-  // ── Mouse/touch move: draw + emit cursor ─────────────────
+  // ── Mouse/touch move: draw + emit cursor + laser ────────
   const onMove = useCallback((e) => {
-    drawOnCanvas(e);
     const canvas = canvasRef.current;
-    if (!canvas || !socket) return;
+    if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
     const src = e.touches?.[0] || e;
     const x = (src.clientX - rect.left) * (canvas.width / rect.width);
     const y = (src.clientY - rect.top) * (canvas.height / rect.height);
-    socket.emit('cursor:move', { roomId, x, y, cw: canvas.width, ch: canvas.height });
-  }, [drawOnCanvas, socket, roomId]);
+
+    // Laser: update local dot position, don't draw on canvas
+    if (tool === 'laser') {
+      laserRef.current = { x, y, updatedAt: Date.now() };
+      if (socket) socket.emit('cursor:move', { roomId, x, y, cw: canvas.width, ch: canvas.height });
+      return; // skip drawing
+    }
+
+    drawOnCanvas(e);
+    if (socket) socket.emit('cursor:move', { roomId, x, y, cw: canvas.width, ch: canvas.height });
+  }, [drawOnCanvas, socket, roomId, tool]);
 
   const bgStyle = bg === 'blueprint'
     ? { background: 'linear-gradient(135deg, #0d1b2a 0%, #0a1628 100%)', backgroundImage: `linear-gradient(rgba(100,180,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(100,180,255,0.08) 1px, transparent 1px), linear-gradient(rgba(100,180,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(100,180,255,0.04) 1px, transparent 1px)`, backgroundSize: '80px 80px, 80px 80px, 20px 20px, 20px 20px' }

@@ -125,13 +125,17 @@ export default function Room() {
     // Auto-open game panel if rejoining mid-game
     socket.on('game:sync', () => setShowGame(true));
 
+    // Canvas background sync from peers
+    socket.on('room:set_background', ({ bg: newBg }) => canvas.setBg(newBg));
+
     return () => {
       ['connect', 'disconnect', 'room:joined', 'room:user_joined', 'room:user_left',
         'draw:start', 'draw:move', 'draw:end', 'draw:text', 'draw:clear', 'draw:undo', 'draw:redo',
         'draw:sync_state', 'chat:message', 'reaction:show', 'settings:updated', 'error', 'game:sync',
       ].forEach(e => socket.off(e));
+      socket.off('room:set_background');
     };
-  }, [socket, canvas, me, roomId]);
+  }, [socket, canvas, me, roomId, user?.username]);
 
   // ── Auto save ──────────────────────────────────────────
   useEffect(() => {
@@ -333,8 +337,12 @@ export default function Room() {
           {/* Reaction Burst */}
           <ReactionBurst reactions={reactions} />
 
-          {/* WebRTC Video/Audio Gallery */}
-          <div className="absolute bottom-4 left-4 right-4 z-30 pointer-events-none">
+          {/* WebRTC Video/Audio Gallery — needs pointer-events-auto, outside the restrictions */}
+        </div>
+
+        {/* WebRTC Media overlays — absolutely positioned over canvas, fully interactive */}
+        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
+          <div className="relative w-full h-full pointer-events-auto">
             <MediaGallery
               localStream={webrtc.localStream}
               peers={webrtc.peers}
