@@ -98,10 +98,10 @@ export default function AuthPage() {
       </div>
 
       {/* ── Main Layout: Hero left + Form right ── */}
-      <div className="relative z-20 w-full h-full flex flex-col lg:flex-row items-center justify-center lg:justify-between px-6 py-10 lg:px-16 xl:px-24 gap-10 overflow-y-auto custom-scrollbar pointer-events-none">
+      <div className="relative z-20 w-full h-full flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 xl:gap-24 px-6 py-10 lg:px-16 xl:px-20 overflow-y-auto custom-scrollbar pointer-events-none">
 
         {/* ── Hero Column (left on desktop) ── */}
-        <div className="flex-1 max-w-xl pointer-events-none animate-[slideInUp_0.7s_ease-out]">
+        <div className="flex-shrink-0 w-full max-w-md lg:max-w-lg pointer-events-none animate-[slideInUp_0.7s_ease-out]">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
             <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)]">
