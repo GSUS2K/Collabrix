@@ -149,9 +149,9 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-brand-dark text-white font-sans flex flex-col overflow-y-auto">
-      {/* Ambient Orbs */}
-      <div className="absolute top-[-20%] right-[-10%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[130px] pointer-events-none animate-[pulse_9s_infinite]" />
-      <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[110px] pointer-events-none animate-[pulse_11s_infinite_3s]" />
+      {/* Ambient Orbs — fixed so they don't affect scroll height */}
+      <div className="fixed top-[-20%] right-[-10%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[130px] pointer-events-none animate-[pulse_9s_infinite] z-0" />
+      <div className="fixed bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[110px] pointer-events-none animate-[pulse_11s_infinite_3s] z-0" />
 
       {/* Header */}
       <header className="relative flex justify-between items-center px-6 py-4 md:px-12 backdrop-blur-md border-b border-white/5 bg-brand-dark/50 z-10 flex-shrink-0">
@@ -185,7 +185,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main */}
-      <main className="relative flex-1 max-w-6xl w-full mx-auto px-6 py-10 z-10">
+      <main className="relative flex-1 max-w-6xl w-full mx-auto px-6 py-10 pb-24 z-10">
 
         {/* Welcome */}
         <div className="mb-10 animate-[slideInUp_0.4s_ease-out]">
