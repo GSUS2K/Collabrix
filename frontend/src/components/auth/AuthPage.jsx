@@ -5,7 +5,6 @@ import { useAuth } from '../../context/AuthContext';
 import Spline from '@splinetool/react-spline';
 import toast from 'react-hot-toast';
 import { logEvent } from '../../utils/analytics';
-import DonationModal from '../common/DonationModal';
 
 const CYCLING_WORDS = ['Together.', 'Creatively.', 'In Real-Time.', 'Effortlessly.', 'With Friends.'];
 
@@ -23,8 +22,42 @@ export default function AuthPage() {
   const [wordIdx, setWordIdx] = useState(0);
   const [fading, setFading] = useState(false);
   const { login, register, loginWithGoogle } = useAuth();
-  const [showDonationModal, setShowDonationModal] = useState(false);
   const navigate = useNavigate();
+
+  // Load BMaC official widget (hides their floating button, we trigger it ourselves)
+  useEffect(() => {
+    // Hide BMaC's default floating button via CSS
+    const style = document.createElement('style');
+    style.id = 'bmc-hide-btn';
+    style.textContent = '#bmc-wbtn { display: none !important; }';
+    document.head.appendChild(style);
+
+    // Inject BMaC widget script
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js';
+    script.setAttribute('data-name', 'BMC-Widget');
+    script.setAttribute('data-cfasync', 'false');
+    script.setAttribute('data-id', 'gsus2k');
+    script.setAttribute('data-description', 'Hope Collabrix was a fun experience! ❄️ Buy me a cold coffee if you liked it!');
+    script.setAttribute('data-message', '');
+    script.setAttribute('data-color', '#00FFBF');
+    script.setAttribute('data-position', 'Right');
+    script.setAttribute('data-x_margin', '18');
+    script.setAttribute('data-y_margin', '18');
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup on unmount
+      document.getElementById('bmc-hide-btn')?.remove();
+      document.getElementById('bmc-wbtn')?.remove();
+      script.remove();
+    };
+  }, []);
+
+  const openDonation = () => {
+    // Trigger BMaC's own widget panel (stays on site)
+    document.getElementById('bmc-wbtn')?.click();
+  };
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -277,7 +310,7 @@ export default function AuthPage() {
             <button
               onClick={() => {
                 logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
-                setShowDonationModal(true);
+                openDonation();
               }}
               className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105"
             >
@@ -308,10 +341,6 @@ export default function AuthPage() {
         }
       `}</style>
 
-      <DonationModal
-        isOpen={showDonationModal}
-        onClose={() => setShowDonationModal(false)}
-      />
     </div>
   );
 }
