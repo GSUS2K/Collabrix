@@ -61,7 +61,7 @@ export default function App() {
           <AnalyticsTracker />
           <AppRoutes />
           <Toaster
-            position="bottom-right"
+            position="bottom-center"
             toastOptions={{
               style: {
                 background: '#18181F',
