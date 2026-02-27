@@ -77,7 +77,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-brand-dark flex flex-col md:flex-row overflow-hidden font-sans">
+    <div className="relative min-h-screen bg-brand-dark flex flex-col lg:grid lg:grid-cols-2 overflow-hidden font-sans">
       {/* ── Ambient Orbs ── */}
       <div className="absolute top-[-15%] left-[-15%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[140px] pointer-events-none animate-[pulse_8s_infinite]" />
       <div className="absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] bg-brand-purple/20 rounded-full blur-[120px] pointer-events-none animate-[pulse_10s_infinite_2s]" />
@@ -98,8 +98,27 @@ export default function AuthPage() {
         </div>
       ))}
 
-      {/* ── Left Side (Content & Form) ── */}
-      <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center p-8 md:p-12 lg:p-20 z-10 min-h-screen relative overflow-y-auto custom-scrollbar shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
+      {/* ── Left Side (Interactive 3D / Graphics) ── */}
+      <div className="hidden lg:block relative w-full h-full bg-black/20 border-r border-white/5 z-0 overflow-hidden order-1">
+        {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
+        <div className="absolute inset-0 mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
+          <Spline
+            scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+            style={{ width: '100%', height: '100%' }}
+          />
+        </div>
+
+        {/* Floating text hints over the 3D scene */}
+        <div className="absolute bottom-12 left-12 z-10 pointer-events-none text-left">
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl animate-[slideInUp_1s_ease-out]">
+            <span className="text-brand-accent animate-[pulse_1s_infinite]">👆</span>
+            <span className="text-white/60 text-xs font-bold tracking-widest uppercase">Drag to play</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Side (Content & Form) ── */}
+      <div className="w-full h-full flex flex-col justify-center px-6 py-8 md:p-12 lg:px-16 xl:px-20 z-10 relative overflow-y-auto custom-scrollbar shadow-[-30px_0_60px_rgba(0,0,0,0.6)] bg-brand-dark/90 backdrop-blur-xl order-2">
         {/* Logo */}
         <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out] mb-12">
           <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)] hover:scale-110 transition-transform cursor-default">
@@ -112,13 +131,13 @@ export default function AuthPage() {
         </div>
 
         {/* Hero */}
-        <div className="max-w-lg animate-[slideInUp_0.7s_ease-out]">
+        <div className="max-w-[480px] w-full animate-[slideInUp_0.7s_ease-out]">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold uppercase tracking-widest mb-8">
             <span className="w-2 h-2 rounded-full bg-brand-accent animate-[pulse_1.5s_infinite]" />
             Live & Free — No credit card needed
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-display font-black leading-tight mb-4 tracking-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-display font-black leading-tight mb-4 tracking-tight">
             Create.
             <br />
             Collaborate.
@@ -291,24 +310,7 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* ── Right Side (Interactive 3D / Graphics) ── */}
-        <div className="hidden lg:block absolute top-0 bottom-0 right-0 lg:left-[45%] xl:left-[40%] bg-black/20 border-l border-white/5 z-0 overflow-hidden pointer-events-none">
-          {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
-          <div className="absolute top-0 right-0 bottom-0 left-0 w-full h-full mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
-            <Spline
-              scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
-              style={{ width: '100%', height: '100%' }}
-            />
-          </div>
 
-          {/* Floating text hints over the 3D scene */}
-          <div className="absolute bottom-12 right-12 z-10 pointer-events-none text-right">
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl animate-[slideInUp_1s_ease-out]">
-              <span className="text-brand-accent animate-[pulse_1s_infinite]">👆</span>
-              <span className="text-white/60 text-xs font-bold tracking-widest uppercase">Drag to play</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Float animation keyframes via inline style tag */}
