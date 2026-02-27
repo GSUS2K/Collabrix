@@ -142,8 +142,11 @@ export default function Room() {
 
     socket.on('error', ({ message }) => toast.error(message));
 
-    // Auto-open game panel if rejoining mid-game
-    socket.on('game:sync', () => setShowGame(true));
+    // Auto-open game panel when game starts or rejoining mid-game
+    const openGame = () => setShowGame(true);
+    socket.on('game:started', openGame);
+    socket.on('game:choosing', openGame);
+    socket.on('game:sync', openGame);
 
     // Canvas background sync from peers
     socket.on('room:set_background', ({ bg: newBg }) => canvas.setBg(newBg));
@@ -151,7 +154,8 @@ export default function Room() {
     return () => {
       ['connect', 'disconnect', 'room:joined', 'room:user_joined', 'room:user_left',
         'draw:start', 'draw:move', 'draw:end', 'draw:text', 'draw:clear', 'draw:undo', 'draw:redo',
-        'draw:sync_state', 'chat:message', 'reaction:show', 'settings:updated', 'error', 'game:sync',
+        'draw:sync_state', 'chat:message', 'reaction:show', 'settings:updated', 'error',
+        'game:sync', 'game:started', 'game:choosing',
       ].forEach(e => socket.off(e));
       socket.off('room:set_background');
     };
