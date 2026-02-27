@@ -68,8 +68,16 @@ export default function Dashboard() {
 
   const handleLogoClick = () => {
     const next = logoClicks + 1;
-    setLogoClicks(next);
-    if (next === 7) setLogoClicks(0); // reset silently
+    if (next === 5) {
+      toast('🕹️ Psst... type "pacman" anywhere on this page', {
+        icon: '🤫',
+        duration: 4000,
+        style: { background: '#1a1a2e', color: '#00FFBF', border: '1px solid rgba(0,255,191,0.2)', fontWeight: 600 },
+      });
+      setLogoClicks(0);
+    } else {
+      setLogoClicks(next);
+    }
   };
 
   const createRoom = async (e) => {
