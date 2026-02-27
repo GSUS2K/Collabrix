@@ -94,7 +94,7 @@ export default function AuthPage() {
       ))}
 
       {/* ── Left Side (Branding) ── */}
-      <div className="flex-1 flex flex-col justify-between p-8 md:p-16 z-10 min-h-[50vh] md:min-h-screen">
+      <div className="flex-1 flex flex-col justify-center gap-12 p-8 md:p-16 z-10 min-h-[50vh] md:min-h-screen">
         {/* Logo */}
         <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out]">
           <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)] hover:scale-110 transition-transform cursor-default">
