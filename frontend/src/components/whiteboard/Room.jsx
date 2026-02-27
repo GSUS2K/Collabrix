@@ -340,16 +340,14 @@ export default function Room() {
           {/* WebRTC Video/Audio Gallery — needs pointer-events-auto, outside the restrictions */}
         </div>
 
-        {/* WebRTC Media overlays — absolutely positioned over canvas, fully interactive */}
-        <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
-          <div className="relative w-full h-full pointer-events-auto">
-            <MediaGallery
-              localStream={webrtc.localStream}
-              peers={webrtc.peers}
-              users={users}
-              myUsername={user?.username}
-            />
-          </div>
+        {/* WebRTC Media overlays — pointer-events-none shell, component handles its own interactions */}
+        <div className="absolute inset-0 z-30 pointer-events-none">
+          <MediaGallery
+            localStream={webrtc.localStream}
+            peers={webrtc.peers}
+            users={users}
+            myUsername={user?.username}
+          />
         </div>
 
         {/* Side Panels */}
