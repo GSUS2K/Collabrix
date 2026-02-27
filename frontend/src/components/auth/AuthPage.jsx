@@ -66,39 +66,39 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden font-sans bg-brand-dark">
+    <div className="relative min-h-screen font-sans bg-brand-dark">
 
-      {/* ── Full-Screen 3D Background ── */}
-      <div className="absolute inset-0 z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
+      {/* ── Full-Screen 3D Background (fixed so it stays while mobile scrolls) ── */}
+      <div className="fixed inset-0 z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Spline
           scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
           style={{ width: '100%', height: '100%' }}
         />
       </div>
 
-      {/* ── Dark vignette overlay so text is readable ── */}
-      <div className="absolute inset-0 z-10 pointer-events-none"
+      {/* ── Dark vignette overlay ── */}
+      <div className="fixed inset-0 z-10 pointer-events-none"
         style={{
           background: 'radial-gradient(ellipse 80% 80% at 60% 50%, transparent 0%, rgba(12,12,15,0.55) 60%, rgba(12,12,15,0.92) 100%)',
         }}
       />
       {/* extra left-side gradient for the hero text legibility */}
-      <div className="absolute inset-0 z-10 pointer-events-none"
+      <div className="fixed inset-0 z-10 pointer-events-none"
         style={{
           background: 'linear-gradient(to right, rgba(12,12,15,0.75) 0%, rgba(12,12,15,0.1) 50%, transparent 100%)',
         }}
       />
 
-      {/* ── "Drag to play" hint ── */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+      {/* ── "Drag to play" hint (fixed at bottom) ── */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none hidden lg:block">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 shadow-xl animate-[slideInUp_1.5s_ease-out]">
           <span className="text-brand-accent animate-[pulse_1.5s_infinite]">👆</span>
           <span className="text-white/50 text-[11px] font-bold tracking-widest uppercase">Drag the scene</span>
         </div>
       </div>
 
-      {/* ── Main Layout: Hero left + Form right ── */}
-      <div className="relative z-20 w-full h-full flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 xl:gap-24 px-6 py-10 lg:px-16 xl:px-20 overflow-y-auto custom-scrollbar pointer-events-none">
+      {/* ── Main Layout ── */}
+      <div className="relative z-20 w-full min-h-screen flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 xl:gap-24 px-6 py-10 lg:py-0 lg:px-16 xl:px-20 pointer-events-none">
 
         {/* ── Hero Column (left on desktop) ── */}
         <div className="flex-shrink-0 w-full max-w-md lg:max-w-lg pointer-events-none animate-[slideInUp_0.7s_ease-out]">
