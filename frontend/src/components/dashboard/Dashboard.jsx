@@ -315,7 +315,8 @@ export default function Dashboard() {
             {rooms.map((room, i) => {
               const accentColor = COLORS[i % COLORS.length];
               const isHovered = hoveredRoom === room._id;
-              const isMyRoom = activeTab === 'my';
+              // Show delete/owner controls if user is the host, regardless of which tab
+              const isOwner = user?.id && room.host && String(room.host) === String(user.id);
               return (
                 <div
                   key={room._id}
@@ -324,7 +325,7 @@ export default function Dashboard() {
                     animation: `slideInUp 0.5s ease-out ${0.05 * i}s both`,
                     boxShadow: isHovered ? `0 20px 60px ${accentColor}22` : '',
                   }}
-                  onClick={() => isMyRoom ? navigate(`/room/${room._id}`) : enterPublicRoom(room)}
+                  onClick={() => isOwner || activeTab === 'my' ? navigate(`/room/${room._id}`) : enterPublicRoom(room)}
                   onMouseEnter={() => setHoveredRoom(room._id)}
                   onMouseLeave={() => setHoveredRoom(null)}
                 >
@@ -334,8 +335,8 @@ export default function Dashboard() {
                     style={{ background: `radial-gradient(ellipse at top left, ${accentColor}08, transparent 60%)` }}
                   />
 
-                  {/* Delete only for my rooms */}
-                  {isMyRoom && (
+                  {/* Delete — visible to room owner regardless of tab */}
+                  {isOwner && (
                     <button
                       className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white/40 opacity-0 group-hover:opacity-100 outline-none hover:bg-brand-red hover:text-white transition-all z-10 hover:scale-110 hover:rotate-12"
                       onClick={(e) => deleteRoom(room._id, e)}
