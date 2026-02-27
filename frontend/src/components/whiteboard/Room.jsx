@@ -311,7 +311,7 @@ export default function Room() {
 
         {/* Toolbar */}
         <div className="absolute left-4 top-4 z-20">
-          <Toolbar {...canvas} />
+          <Toolbar {...canvas} socket={socket} roomId={roomId} />
         </div>
 
         {/* Canvas Wrap */}

@@ -5,7 +5,7 @@ const CURSOR_FADE = 3500;
 export default function Canvas({
   initCanvas, resizeCanvas,
   startDrawing, draw: drawOnCanvas, stopDrawing,
-  bg, rainbowMode,
+  bg, rainbowMode, tool,
   socket, roomId,
 }) {
   const wrapRef = useRef(null);
@@ -116,16 +116,29 @@ export default function Canvas({
     socket.emit('cursor:move', { roomId, x, y, cw: canvas.width, ch: canvas.height });
   }, [drawOnCanvas, socket, roomId]);
 
+  const bgStyle = bg === 'blueprint'
+    ? { background: 'linear-gradient(135deg, #0d1b2a 0%, #0a1628 100%)', backgroundImage: `linear-gradient(rgba(100,180,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(100,180,255,0.08) 1px, transparent 1px), linear-gradient(rgba(100,180,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(100,180,255,0.04) 1px, transparent 1px)`, backgroundSize: '80px 80px, 80px 80px, 20px 20px, 20px 20px' }
+    : {};
+
   const bgClass = bg === 'grid'
     ? 'bg-[url("data:image/svg+xml,%3Csvg%20width=%2240%22%20height=%2240%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath%20d=%22M%2040%200%20L%200%200%200%2040%22%20fill=%22none%22%20stroke=%22rgba(255,255,255,0.05)%22%20stroke-width=%221%22/%3E%3C/svg%3E")]'
     : bg === 'dots'
       ? 'bg-[url("data:image/svg+xml,%3Csvg%20width=%2220%22%20height=%2220%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Ccircle%20cx=%222%22%20cy=%222%22%20r=%221%22%20fill=%22rgba(255,255,255,0.1)%22/%3E%3C/svg%3E")]'
       : 'bg-transparent';
 
+  const cursorClass = tool === 'laser'
+    ? 'cursor-crosshair'
+    : tool === 'eraser'
+      ? 'cursor-cell'
+      : tool === 'text'
+        ? 'cursor-text'
+        : 'cursor-crosshair';
+
   return (
     <div
       ref={wrapRef}
-      className={`absolute inset-0 w-full h-full overflow-hidden ${bgClass} ${rainbowMode ? 'rainbow-mode' : ''}`}
+      className={`absolute inset-0 w-full h-full overflow-hidden ${bgClass} ${rainbowMode ? 'rainbow-mode' : ''} ${cursorClass}`}
+      style={bgStyle}
     >
       <canvas
         ref={setCanvas}

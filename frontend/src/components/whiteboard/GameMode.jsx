@@ -23,6 +23,17 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
 
   const amDrawing = drawerSid === socket?.id && phase === 'drawing';
 
+  // Escape key to close lobby / word pick overlays
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key === 'Escape' && (phase === 'lobby' || (phase === 'choosing' && wordChoices.length > 0))) {
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [phase, wordChoices, onClose]);
+
   useEffect(() => {
     const locked = (phase === 'drawing' || phase === 'choosing') && drawerSid !== socket?.id;
     onDrawingLock?.(locked);
@@ -157,7 +168,10 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   // ── Lobby ───────────────────────────────────────────────
   if (phase === 'lobby') {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fadeIn_0.2s]">
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fadeIn_0.2s]"
+        onClick={onClose}  // click backdrop to dismiss
+      >
         <div className="bg-brand-card border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
