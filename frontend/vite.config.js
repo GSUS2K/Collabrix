@@ -11,7 +11,16 @@ export default defineConfig({
     }),
   ],
   build: {
-    sourcemap: true
+    sourcemap: true,
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          socket: ['socket.io-client'],
+        },
+      },
+    },
   },
   server: {
     port: 5173,
