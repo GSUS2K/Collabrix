@@ -16,15 +16,6 @@ const FEATURES = [
   { icon: '💬', title: 'Chat & React', desc: 'Emoji bursts, file attachments, live chat.' },
 ];
 
-const FLOATING_EMOJIS = [
-  { e: '🎨', x: '8%', y: '15%', delay: '0s', dur: '6s' },
-  { e: '✏️', x: '88%', y: '12%', delay: '1s', dur: '7s' },
-  { e: '🎮', x: '5%', y: '70%', delay: '2s', dur: '5s' },
-  { e: '💬', x: '90%', y: '65%', delay: '0.5s', dur: '8s' },
-  { e: '🖌️', x: '50%', y: '5%', delay: '1.5s', dur: '6.5s' },
-  { e: '⚡', x: '75%', y: '85%', delay: '0.8s', dur: '7.5s' },
-];
-
 export default function AuthPage() {
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ username: '', email: '', password: '' });
@@ -32,13 +23,11 @@ export default function AuthPage() {
   const [wordIdx, setWordIdx] = useState(0);
   const [fading, setFading] = useState(false);
   const { login, register, loginWithGoogle } = useAuth();
-
   const [showDonationModal, setShowDonationModal] = useState(false);
   const navigate = useNavigate();
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  // Cycle the highlight word every 2.5s
   useEffect(() => {
     const interval = setInterval(() => {
       setFading(true);
@@ -77,73 +66,65 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="relative min-h-screen bg-brand-dark flex flex-col lg:grid lg:grid-cols-2 overflow-hidden font-sans">
-      {/* ── Ambient Orbs ── */}
-      <div className="absolute top-[-15%] left-[-15%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[140px] pointer-events-none animate-[pulse_8s_infinite]" />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[600px] h-[600px] bg-brand-purple/20 rounded-full blur-[120px] pointer-events-none animate-[pulse_10s_infinite_2s]" />
-      <div className="absolute top-[40%] right-[25%] w-[300px] h-[300px] bg-[#FF6B6B]/10 rounded-full blur-[90px] pointer-events-none animate-[pulse_12s_infinite_4s]" />
+    <div className="relative w-screen h-screen overflow-hidden font-sans bg-brand-dark">
 
-      {/* ── Floating Emojis ── */}
-      {FLOATING_EMOJIS.map(({ e, x, y, delay, dur }) => (
-        <div
-          key={e + x}
-          className="absolute text-2xl pointer-events-none select-none opacity-20"
-          style={{
-            left: x, top: y,
-            animation: `float ${dur} ease-in-out infinite`,
-            animationDelay: delay,
-          }}
-        >
-          {e}
-        </div>
-      ))}
+      {/* ── Full-Screen 3D Background ── */}
+      <div className="absolute inset-0 z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
+        <Spline
+          scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
 
-      {/* ── Left Side (Interactive 3D / Graphics) ── */}
-      <div className="hidden lg:block relative w-full h-full bg-black/20 border-r border-white/5 z-0 overflow-hidden order-1">
-        {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
-        <div className="absolute inset-0 mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
-          <Spline
-            scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
-            style={{ width: '100%', height: '100%' }}
-          />
-        </div>
+      {/* ── Dark vignette overlay so text is readable ── */}
+      <div className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse 80% 80% at 60% 50%, transparent 0%, rgba(12,12,15,0.55) 60%, rgba(12,12,15,0.92) 100%)',
+        }}
+      />
+      {/* extra left-side gradient for the hero text legibility */}
+      <div className="absolute inset-0 z-10 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to right, rgba(12,12,15,0.75) 0%, rgba(12,12,15,0.1) 50%, transparent 100%)',
+        }}
+      />
 
-        {/* Floating text hints over the 3D scene */}
-        <div className="absolute bottom-12 left-12 z-10 pointer-events-none text-left">
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl animate-[slideInUp_1s_ease-out]">
-            <span className="text-brand-accent animate-[pulse_1s_infinite]">👆</span>
-            <span className="text-white/60 text-xs font-bold tracking-widest uppercase">Drag to play</span>
-          </div>
+      {/* ── "Drag to play" hint ── */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 shadow-xl animate-[slideInUp_1.5s_ease-out]">
+          <span className="text-brand-accent animate-[pulse_1.5s_infinite]">👆</span>
+          <span className="text-white/50 text-[11px] font-bold tracking-widest uppercase">Drag the scene</span>
         </div>
       </div>
 
-      {/* ── Right Side (Content & Form) ── */}
-      <div className="w-full h-full flex flex-col justify-center px-6 py-8 md:p-12 lg:px-16 xl:px-20 z-10 relative overflow-y-auto custom-scrollbar shadow-[-30px_0_60px_rgba(0,0,0,0.6)] bg-brand-dark/90 backdrop-blur-xl order-2">
-        {/* Logo */}
-        <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out] mb-12">
-          <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)] hover:scale-110 transition-transform cursor-default">
-            <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
-              <path d="M8 20 Q14 10 20 20 Q26 30 32 20" stroke="#00FFBF" strokeWidth="3" strokeLinecap="round" fill="none" />
-              <circle cx="20" cy="20" r="4" fill="#00FFBF" />
-            </svg>
-          </div>
-          <span className="text-2xl font-display font-bold tracking-wide text-white">Collabrix</span>
-        </div>
+      {/* ── Main Layout: Hero left + Form right ── */}
+      <div className="relative z-20 w-full h-full flex flex-col lg:flex-row items-center justify-center lg:justify-between px-6 py-10 lg:px-16 xl:px-24 gap-10 overflow-y-auto custom-scrollbar pointer-events-none">
 
-        {/* Hero */}
-        <div className="max-w-[480px] w-full animate-[slideInUp_0.7s_ease-out]">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold uppercase tracking-widest mb-8">
+        {/* ── Hero Column (left on desktop) ── */}
+        <div className="flex-1 max-w-xl pointer-events-none animate-[slideInUp_0.7s_ease-out]">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-10">
+            <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)]">
+              <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
+                <path d="M8 20 Q14 10 20 20 Q26 30 32 20" stroke="#00FFBF" strokeWidth="3" strokeLinecap="round" fill="none" />
+                <circle cx="20" cy="20" r="4" fill="#00FFBF" />
+              </svg>
+            </div>
+            <span className="text-2xl font-display font-bold tracking-wide text-white">Collabrix</span>
+          </div>
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold uppercase tracking-widest mb-6">
             <span className="w-2 h-2 rounded-full bg-brand-accent animate-[pulse_1.5s_infinite]" />
-            Live & Free — No credit card needed
+            Live &amp; Free — No credit card needed
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-display font-black leading-tight mb-4 tracking-tight">
-            Create.
-            <br />
-            Collaborate.
-            <br />
+          {/* H1 */}
+          <h1 className="text-5xl md:text-6xl xl:text-7xl font-display font-black leading-[1.05] mb-5 tracking-tight drop-shadow-2xl">
+            Create.<br />
+            Collaborate.<br />
             <span
-              className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-[#00E6A8] to-brand-accent transition-all duration-400"
+              className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent via-[#00E6A8] to-brand-accent"
               style={{
                 opacity: fading ? 0 : 1,
                 transform: fading ? 'translateY(10px)' : 'translateY(0)',
@@ -155,19 +136,18 @@ export default function AuthPage() {
             </span>
           </h1>
 
-          <p className="text-base text-white/55 mb-10 leading-relaxed max-w-sm">
+          <p className="text-base text-white/60 mb-8 leading-relaxed max-w-md drop-shadow-lg">
             The canvas where ideas become art. Draw, game, voice-chat, and react — all inside one powerful collaborative space built for creators.
           </p>
 
-          {/* Feature Pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-12">
-            {FEATURES.map(({ icon, title, desc }, i) => (
+          {/* Feature pills — hidden on small screens to reduce clutter */}
+          <div className="hidden md:grid grid-cols-2 gap-3 max-w-sm">
+            {FEATURES.map(({ icon, title, desc }) => (
               <div
                 key={title}
-                className="group flex items-start gap-3 bg-white/[0.04] border border-white/[0.07] rounded-2xl p-4 backdrop-blur-sm hover:bg-white/[0.08] hover:border-white/20 hover:-translate-y-0.5 transition-all cursor-default"
-                style={{ animation: `slideInUp 0.6s ease-out ${0.1 * (i + 1)}s both` }}
+                className="flex items-start gap-3 bg-white/[0.06] border border-white/10 rounded-2xl p-3.5 backdrop-blur-md hover:bg-white/10 hover:-translate-y-0.5 transition-all cursor-default"
               >
-                <span className="text-xl mt-0.5 group-hover:scale-110 transition-transform">{icon}</span>
+                <span className="text-lg mt-0.5">{icon}</span>
                 <div>
                   <p className="text-sm font-bold text-white/90">{title}</p>
                   <p className="text-xs text-white/40 mt-0.5 leading-relaxed">{desc}</p>
@@ -175,154 +155,159 @@ export default function AuthPage() {
               </div>
             ))}
           </div>
+        </div>
 
-          {/* Form Card embedded in left column */}
-          <div className="w-full max-w-[480px] bg-brand-card/60 backdrop-blur-3xl border border-white/10 rounded-[28px] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.5)] animate-[slideInUp_0.8s_ease-out]">
-            {/* Tab Switcher */}
-            <div className="flex bg-white/5 rounded-xl p-1 mb-8 border border-white/5">
-              {['login', 'register'].map((m) => (
-                <button
-                  key={m}
-                  className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition-all ${mode === m ? 'bg-brand-accent text-brand-dark shadow-md' : 'text-white/40 hover:text-white'}`}
-                  onClick={() => setMode(m)}
-                >
-                  {m === 'login' ? '👋 Sign In' : '✨ Create Account'}
-                </button>
-              ))}
+        {/* ── Login Card (right on desktop) ── */}
+        <div className="pointer-events-auto w-full max-w-[420px] bg-white/[0.06] backdrop-blur-2xl border border-white/[0.12] rounded-[28px] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.6)] animate-[slideInUp_0.9s_ease-out] flex-shrink-0">
+
+          {/* Tab Switcher */}
+          <div className="flex bg-white/5 rounded-xl p-1 mb-7 border border-white/5">
+            {['login', 'register'].map((m) => (
+              <button
+                key={m}
+                className={`flex-1 text-sm font-bold py-2.5 rounded-lg transition-all ${mode === m ? 'bg-brand-accent text-brand-dark shadow-md' : 'text-white/40 hover:text-white'}`}
+                onClick={() => setMode(m)}
+              >
+                {m === 'login' ? '👋 Sign In' : '✨ Create Account'}
+              </button>
+            ))}
+          </div>
+
+          {/* Google */}
+          <div className="flex justify-center mb-5 relative z-20">
+            <GoogleLogin
+              onSuccess={onGoogleSuccess}
+              onError={() => toast.error('Google login failed or was cancelled')}
+              theme="filled_black"
+              size="large"
+              shape="pill"
+              text={mode === 'login' ? 'signin_with' : 'signup_with'}
+              width="320"
+            />
+          </div>
+
+          {/* Divider */}
+          <div className="flex items-center mb-5 text-white/25 text-[10px] font-black tracking-[0.2em]">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="px-4">OR</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+
+          {/* Form */}
+          <form className="flex flex-col gap-4" onSubmit={submit}>
+            {mode === 'register' && (
+              <div className="animate-[slideInUp_0.3s_ease-out]">
+                <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Username</label>
+                <input
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
+                  type="text"
+                  placeholder="coolartist42"
+                  value={form.username}
+                  onChange={set('username')}
+                  required
+                  autoComplete="username"
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Email</label>
+              <input
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
+                type="email"
+                placeholder="you@example.com"
+                value={form.email}
+                onChange={set('email')}
+                required
+                autoComplete="email"
+              />
             </div>
-
-            {/* Google */}
-            <div className="flex justify-center mb-5 relative z-20">
-              <GoogleLogin
-                onSuccess={onGoogleSuccess}
-                onError={() => toast.error('Google login failed or was cancelled')}
-                theme="filled_black"
-                size="large"
-                shape="pill"
-                text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                width="320"
+            <div>
+              <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Password</label>
+              <input
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
+                type="password"
+                placeholder={mode === 'register' ? 'Min 6 characters' : '••••••••'}
+                value={form.password}
+                onChange={set('password')}
+                required
+                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
               />
             </div>
 
-            {/* Divider */}
-            <div className="flex items-center mb-5 text-white/25 text-[10px] font-black tracking-[0.2em]">
-              <div className="flex-1 h-px bg-white/10" />
-              <span className="px-4">OR</span>
-              <div className="flex-1 h-px bg-white/10" />
-            </div>
-
-            {/* Form */}
-            <form className="flex flex-col gap-4" onSubmit={submit}>
-              {mode === 'register' && (
-                <div className="animate-[slideInUp_0.3s_ease-out]">
-                  <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Username</label>
-                  <input
-                    className="w-full bg-brand-dark/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
-                    type="text"
-                    placeholder="coolartist42"
-                    value={form.username}
-                    onChange={set('username')}
-                    required
-                    autoComplete="username"
-                  />
-                </div>
+            <button
+              className="w-full bg-brand-accent text-brand-dark font-black text-sm py-3.5 mt-1 flex items-center justify-center gap-2 rounded-xl transition-all hover:bg-brand-accentHover hover:shadow-[0_0_30px_rgba(0,255,191,0.4)] hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
+              type="submit"
+              disabled={busy}
+            >
+              {busy ? (
+                <div className="w-5 h-5 border-2 border-brand-dark/20 border-t-brand-dark rounded-full animate-spin" />
+              ) : (
+                <>
+                  {mode === 'login' ? 'Sign In' : 'Create Account'}
+                  <span className="group-hover:translate-x-1 transition-transform text-lg">→</span>
+                </>
               )}
-              <div>
-                <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Email</label>
-                <input
-                  className="w-full bg-brand-dark/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={set('email')}
-                  required
-                  autoComplete="email"
-                />
-              </div>
-              <div>
-                <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">Password</label>
-                <input
-                  className="w-full bg-brand-dark/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-brand-accent focus:ring-1 focus:ring-brand-accent transition-all hover:border-white/20"
-                  type="password"
-                  placeholder={mode === 'register' ? 'Min 6 characters' : '••••••••'}
-                  value={form.password}
-                  onChange={set('password')}
-                  required
-                  autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                />
-              </div>
+            </button>
+          </form>
 
-              <button
-                className="w-full bg-brand-accent text-brand-dark font-black text-sm py-3.5 mt-1 flex items-center justify-center gap-2 rounded-xl transition-all hover:bg-brand-accentHover hover:shadow-[0_0_30px_rgba(0,255,191,0.35)] hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group"
-                type="submit"
-                disabled={busy}
-              >
-                {busy ? (
-                  <div className="w-5 h-5 border-2 border-brand-dark/20 border-t-brand-dark rounded-full animate-spin" />
-                ) : (
-                  <>
-                    {mode === 'login' ? 'Sign In' : 'Create Account'}
-                    <span className="group-hover:translate-x-1 transition-transform text-lg">→</span>
-                  </>
-                )}
-              </button>
-            </form>
+          <p className="text-center mt-5 text-[12px] text-white/40">
+            {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
+            <button
+              className="text-white/70 hover:text-brand-accent transition-colors font-bold underline decoration-white/20 underline-offset-4"
+              onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+            >
+              {mode === 'login' ? 'Sign up free' : 'Sign in'}
+            </button>
+          </p>
 
-            <p className="text-center mt-5 text-[12px] text-white/40">
-              {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
-              <button
-                className="text-white/70 hover:text-brand-accent transition-colors font-bold underline decoration-white/20 underline-offset-4"
-                onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
-              >
-                {mode === 'login' ? 'Sign up free' : 'Sign in'}
-              </button>
-            </p>
+          {/* Social Links */}
+          <div className="flex items-center justify-center gap-3 mt-6 pt-5 border-t border-white/[0.07]">
+            <a
+              href="https://github.com/GSUS2K"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-2 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-white/60 hover:text-white transition-all hover:scale-105"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+              </svg>
+              GSUS2K
+            </a>
+
+            <button
+              onClick={() => {
+                logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
+                setShowDonationModal(true);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105"
+            >
+              <span>🥤</span> Cold coffee?
+            </button>
           </div>
 
-          <div className="flex flex-col items-center mt-8 gap-4">
-            <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/GSUS2K"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-xs font-bold text-white/70 hover:text-white transition-all hover:scale-105"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-                </svg>
-                GSUS2K
-              </a>
-
-              <button
-                onClick={() => {
-                  logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
-                  setShowDonationModal(true);
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-xs font-bold text-brand-yellow transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
-              >
-                <span>🥤</span> Buy me a cold coffee (Max $5)
-              </button>
-            </div>
-
-            <p className="text-center text-[11px] text-white/20">
-              By continuing, you agree to our Terms of Service
-            </p>
-          </div>
+          <p className="text-center text-[10px] text-white/15 mt-3">
+            By continuing, you agree to our Terms of Service
+          </p>
         </div>
-
-
       </div>
 
-      {/* Float animation keyframes via inline style tag */}
+      {/* Float animation */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
           33% { transform: translateY(-18px) rotate(5deg); }
           66% { transform: translateY(-8px) rotate(-3deg); }
         }
+        @keyframes slideInUp {
+          from { opacity: 0; transform: translateY(24px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
       `}</style>
 
-      {/* Custom Global Modals */}
       <DonationModal
         isOpen={showDonationModal}
         onClose={() => setShowDonationModal(false)}
