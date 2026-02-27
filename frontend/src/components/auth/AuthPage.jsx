@@ -103,7 +103,7 @@ export default function AuthPage() {
         {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
         <div className="absolute inset-0 mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
           <Spline
-            scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+            scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
             style={{ width: '100%', height: '100%' }}
           />
         </div>
