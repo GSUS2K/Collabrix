@@ -20,10 +20,11 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   const [settings, setSettings] = useState({ rounds: 3, turnTime: 80 });
   const logRef = useRef(null);
   const logIdRef = useRef(0);
+  const hudRef = useRef(null); // For Draggable nodeRef
 
   const amDrawing = drawerSid === socket?.id && phase === 'drawing';
 
-  // Escape key to close lobby / word pick overlays
+  // Escape key to close lobby / word-pick overlays
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape' && (phase === 'lobby' || (phase === 'choosing' && wordChoices.length > 0))) {
@@ -34,11 +35,13 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     return () => window.removeEventListener('keydown', handler);
   }, [phase, wordChoices, onClose]);
 
+  // Lock drawing for non-drawers
   useEffect(() => {
     const locked = (phase === 'drawing' || phase === 'choosing') && drawerSid !== socket?.id;
     onDrawingLock?.(locked);
   }, [phase, drawerSid, socket, onDrawingLock]);
 
+  // Socket listeners
   useEffect(() => {
     if (!socket) return;
 
@@ -99,7 +102,15 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       setPhase('over');
     });
 
-    socket.on('game:stopped', () => { setPhase('lobby'); setPlayers([]); setGuessLog([]); });
+    // Game stopped by host — reset to lobby (don't close, just show lobby again)
+    socket.on('game:stopped', () => {
+      setPhase('lobby');
+      setPlayers([]);
+      setGuessLog([]);
+      setWordChoices([]);
+      setMaskedWord('');
+      setMyWord('');
+    });
 
     // Restore state after refresh
     socket.on('game:sync', ({ status, players: p, round: r, maxRounds: mr, turnTime: tt,
@@ -148,7 +159,8 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s]">
         <div className="bg-brand-card border-2 border-brand-accent/30 p-8 rounded-[24px] shadow-[0_10px_40px_rgba(0,0,0,0.8)] flex flex-col items-center min-w-[320px] animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]">
-          <div className="text-2xl mb-6">🎨 <span className="font-display font-bold text-white">Pick a word</span></div>
+          <div className="text-2xl mb-2">🎨 <span className="font-display font-bold text-white">Pick a word to draw</span></div>
+          <p className="text-xs text-white/40 mb-6">Choose wisely — harder words score more if guessed fast!</p>
           <div className="flex flex-col gap-3 w-full">
             {wordChoices.map(w => (
               <button
@@ -170,16 +182,19 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     return (
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm animate-[fadeIn_0.2s]"
-        onClick={onClose}  // click backdrop to dismiss
+        onClick={onClose}
       >
-        <div className="bg-brand-card border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]">
+        <div
+          className="bg-brand-card border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]"
+          onClick={e => e.stopPropagation()} // prevent backdrop click from firing through card
+        >
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
               <span className="text-3xl">🎮</span>
               <h2 className="text-2xl font-display font-bold text-white">Skribbl Mode</h2>
             </div>
             <button
-              className="text-white/40 hover:text-white transition-colors"
+              className="text-white/40 hover:text-white transition-colors hover:rotate-90 transition-transform"
               onClick={onClose}
             >
               <svg width="24" height="24" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none">
@@ -189,7 +204,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           </div>
 
           <p className="text-sm text-white/60 mb-8 leading-relaxed">
-            One player draws, everyone else guesses the word in the chat. The faster you guess, the more points you earn!
+            One player draws, everyone else guesses. The faster you guess, the more points you earn!
           </p>
 
           {isHost && (
@@ -245,10 +260,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-[fadeIn_0.3s]">
         <div className="bg-brand-card border-2 border-brand-yellow/30 p-10 rounded-3xl shadow-[0_20px_60px_rgba(255,217,61,0.15)] max-w-md w-full animate-[slideInUp_0.4s_cubic-bezier(0.34,1.56,0.64,1)] text-center relative overflow-hidden">
-
-          {/* Confetti effect background (handled by index.css but we add decorative orbs) */}
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-brand-yellow/10 rounded-full blur-[60px] pointer-events-none" />
-
           <div className="text-7xl mb-4 animate-[reactionFloat_2s_ease-out_forwards]">🏆</div>
           <h2 className="text-4xl font-display font-black text-white mb-2 tracking-tight">Game Over!</h2>
 
@@ -260,7 +272,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
 
           <div className="flex flex-col gap-3 mb-10 text-left bg-brand-dark/50 p-4 rounded-2xl border border-white/5">
             {players.map((p, i) => (
-              <div key={p.socketId} className={`flex items-center p-3 rounded-xl transition-colors ${i === 0 ? 'bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow' : 'bg-white/5 text-white/80'}`}>
+              <div key={p.socketId} className={`flex items-center p-3 rounded-xl ${i === 0 ? 'bg-brand-yellow/10 border border-brand-yellow/30 text-brand-yellow' : 'bg-white/5 text-white/80'}`}>
                 <span className={`w-8 font-black ${i === 0 ? 'text-lg' : 'text-sm opacity-50'}`}>#{i + 1}</span>
                 <span className="flex-1 font-bold truncate pr-4">{p.username}</span>
                 <span className="font-mono">{p.score} pts</span>
@@ -283,11 +295,10 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     );
   }
 
-  // ── In-game HUD ──────────────────────────────────────────
+  // ── In-game HUD (choosing-waiting + drawing + turnEnd) ──
   return (
-    <Draggable handle=".game-drag-handle" bounds="parent">
-      <div className="absolute z-40 top-4 right-4 w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
-
+    <Draggable nodeRef={hudRef} handle=".game-drag-handle" bounds="parent">
+      <div ref={hudRef} className="absolute z-40 top-4 right-4 w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
 
         {/* Turn end flash */}
         {phase === 'turnEnd' && (
@@ -302,17 +313,25 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           </div>
         )}
 
+        {/* Choosing-waiting overlay (drawer is picking, others wait) */}
+        {phase === 'choosing' && wordChoices.length === 0 && (
+          <div className="absolute inset-0 z-20 bg-brand-dark/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+            <div className="text-4xl mb-3 animate-[pulse_1s_infinite]">🤔</div>
+            <div className="text-sm font-bold text-white/80">{drawer} is picking a word...</div>
+            <div className="text-xs text-white/40 mt-1">Round {round}/{maxRounds}</div>
+          </div>
+        )}
+
         {/* Timer bar */}
-        <div className="h-1.5 w-full bg-brand-dark">
+        <div className="h-1.5 w-full bg-brand-dark flex-shrink-0">
           <div
             className="h-full transition-all duration-1000 ease-linear rounded-r-full"
             style={{ width: `${timerPct}%`, backgroundColor: timerColor }}
           />
         </div>
 
-        {/* HUD top (Word & Status) */}
-        <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden">
-
+        {/* HUD top */}
+        <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden flex-shrink-0">
           {/* Drag Handle */}
           <div className="game-drag-handle flex justify-center pb-2 cursor-grab active:cursor-grabbing hover:bg-white/5 -mt-2 -mx-4 mb-2 opacity-50 transition-colors">
             <div className="w-12 h-1.5 bg-white/20 rounded-full" />
@@ -325,7 +344,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             <div className="text-base font-black font-mono pr-12" style={{ color: timerColor }}>⏱ {timer}s</div>
           </div>
 
-          {/* Word Display */}
+          {/* Word display */}
           <div className="flex justify-center mb-2 min-h-[40px] items-center">
             {amDrawing ? (
               <div className="flex flex-col items-center">
@@ -335,7 +354,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             ) : youGuessed ? (
               <div className="flex flex-col items-center animate-[fadeIn_0.3s]">
                 <span className="text-xs text-brand-accent/80 font-bold uppercase tracking-wider mb-1">You Guessed It!</span>
-                <span className="text-2xl font-display font-black text-brand-accent tracking-widest uppercase text-shadow-sm">{maskedWord}</span>
+                <span className="text-2xl font-display font-black text-brand-accent tracking-widest uppercase">{maskedWord}</span>
               </div>
             ) : (
               <div className="flex gap-1 flex-wrap justify-center">
@@ -354,10 +373,12 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             )}
           </div>
 
+          {/* Stop game button — prominent, dedicated placement */}
           {isHost && (
             <button
-              className="absolute top-8 right-3 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors z-10 bg-brand-dark/50 px-2 py-1 rounded"
+              className="absolute top-8 right-3 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors z-10 bg-brand-dark/50 hover:bg-brand-red/10 px-2 py-1 rounded border border-transparent hover:border-brand-red/30"
               onClick={stopGame}
+              title="Stop game (host only)"
             >
               ■ Stop
             </button>
@@ -365,7 +386,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
         </div>
 
         {/* Scoreboard */}
-        <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar">
+        <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar flex-shrink-0">
           {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
             <div
               key={p.socketId}
@@ -382,14 +403,14 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           ))}
         </div>
 
-        {/* Guess panel (Chat Log) */}
-        <div className="flex-1 min-h-[200px] flex flex-col bg-brand-dark/10">
+        {/* Guess log + input */}
+        <div className="flex-1 min-h-[180px] flex flex-col bg-brand-dark/10 overflow-hidden">
           <div className="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm hide-scrollbar" ref={logRef}>
-            {guessLog.slice(-15).map(g => (
+            {guessLog.slice(-20).map(g => (
               <div
                 key={g.id}
                 className={`px-3 py-1.5 rounded-lg break-words animate-[fadeIn_0.2s_ease-out]
-                ${g.type === 'system' ? 'text-white/50 text-xs font-bold text-center my-2' : ''}
+                ${g.type === 'system' ? 'text-white/50 text-xs font-bold text-center my-1' : ''}
                 ${g.type === 'wrong' ? 'text-white/80 bg-white/5' : ''}
                 ${g.type === 'close' ? 'text-brand-yellow font-medium bg-brand-yellow/10 border border-brand-yellow/20' : ''}
                 ${g.type === 'hint' ? 'text-brand-purple font-medium bg-brand-purple/10 border border-brand-purple/20' : ''}
@@ -401,9 +422,8 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             ))}
           </div>
 
-          {/* Input */}
           {!amDrawing && phase === 'drawing' && !youGuessed && (
-            <div className="p-3 bg-brand-dark pb-4">
+            <div className="p-3 bg-brand-dark border-t border-white/5">
               <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent transition-all">
                 <input
                   className="flex-1 bg-transparent px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none"
@@ -425,8 +445,14 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           )}
 
           {youGuessed && (
-            <div className="p-4 bg-brand-dark/80 text-center">
+            <div className="p-3 bg-brand-dark/80 border-t border-white/5 text-center">
               <div className="text-xs font-bold text-brand-accent uppercase tracking-wider">🎉 Correct! Watch others guess.</div>
+            </div>
+          )}
+
+          {amDrawing && phase === 'drawing' && (
+            <div className="p-3 bg-brand-dark/80 border-t border-white/5 text-center">
+              <div className="text-xs font-bold text-brand-yellow/80 uppercase tracking-wider">✏️ You're drawing — go!</div>
             </div>
           )}
         </div>
