@@ -4,7 +4,8 @@ const CURSOR_FADE = 3500;
 const LASER_FADE = 2000;
 
 // SVG cursor data URIs
-const PENCIL_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg transform='rotate(-45 12 12)'%3E%3Crect x='10' y='2' width='4' height='14' rx='1' fill='%23fff' stroke='%23333' stroke-width='1'/%3E%3Cpolygon points='10,16 14,16 12,20' fill='%23fff' stroke='%23333' stroke-width='1'/%3E%3Crect x='10' y='2' width='4' height='4' rx='1' fill='%23888'/%3E%3C/g%3E%3C/svg%3E") 2 22, crosshair`;
+// Pencil tip is at bottom-left (1,19) — hotspot matches exactly
+const PENCIL_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpolygon points='1,19 5,15 8,18' fill='%23aaa' stroke='%23555' stroke-width='0.5'/%3E%3Ccircle cx='1.5' cy='18.5' r='1' fill='%23333'/%3E%3Cpolygon points='3,17 14,6 17,9 6,20' fill='%23FFF9C4' stroke='%23888' stroke-width='0.8'/%3E%3Crect x='12.5' y='1.5' width='5' height='4' rx='0.8' fill='%23ffb3b3' stroke='%23888' stroke-width='0.8' transform='rotate(45 15 4)'/%3E%3C/svg%3E") 1 19, crosshair`;
 
 const LASER_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%23ff4444' stroke-width='2'/%3E%3Cline x1='12' y1='2' x2='12' y2='8' stroke='%23ff4444' stroke-width='1.5'/%3E%3Cline x1='12' y1='16' x2='12' y2='22' stroke='%23ff4444' stroke-width='1.5'/%3E%3Cline x1='2' y1='12' x2='8' y2='12' stroke='%23ff4444' stroke-width='1.5'/%3E%3Cline x1='16' y1='12' x2='22' y2='12' stroke='%23ff4444' stroke-width='1.5'/%3E%3Ccircle cx='12' cy='12' r='1.5' fill='%23ff4444'/%3E%3C/svg%3E") 12 12, crosshair`;
 
