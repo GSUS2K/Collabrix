@@ -62,12 +62,13 @@ export default function Room() {
   const canvas = useCanvas({ socket, roomId, canDraw });
   const webrtc = useWebRTC(socket, roomId, socket?.id);
 
-  // 🕹️ Pac-Man easter egg: type "pacman" anywhere (not in an input)
+  // 🕹️ Pac-Man easter egg: type "pacman" anywhere (not in an input, not during a game)
   useEffect(() => {
     const SEQUENCE = 'pacman';
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      if (showGame) return; // don't trigger during Skribbl
       pacmanSeqRef.current = (pacmanSeqRef.current + e.key).slice(-SEQUENCE.length);
       if (pacmanSeqRef.current === SEQUENCE) {
         setShowPacman(true);
@@ -76,7 +77,7 @@ export default function Room() {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, []);
+  }, [showGame]);
 
   // ── Join ───────────────────────────────────────────────
   useEffect(() => {
