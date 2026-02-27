@@ -96,7 +96,7 @@ export default function AuthPage() {
       ))}
 
       {/* ── Left Side (Content & Form) ── */}
-      <div className="flex-1 lg:flex-[0.8] xl:flex-[0.6] flex flex-col justify-center p-8 md:p-12 lg:p-20 z-10 min-h-screen relative overflow-y-auto custom-scrollbar">
+      <div className="w-full lg:w-[45%] xl:w-[40%] flex flex-col justify-center p-8 md:p-12 lg:p-20 z-10 min-h-screen relative overflow-y-auto custom-scrollbar shadow-[20px_0_50px_rgba(0,0,0,0.5)]">
         {/* Logo */}
         <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out] mb-12">
           <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)] hover:scale-110 transition-transform cursor-default">
@@ -289,10 +289,13 @@ export default function AuthPage() {
         </div>
 
         {/* ── Right Side (Interactive 3D / Graphics) ── */}
-        <div className="hidden lg:flex flex-1 relative bg-black/20 border-l border-white/5 z-0 items-center justify-center overflow-hidden">
+        <div className="hidden lg:block absolute top-0 bottom-0 right-0 lg:left-[45%] xl:left-[40%] bg-black/20 border-l border-white/5 z-0 overflow-hidden pointer-events-none">
           {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
-          <div className="absolute inset-0 w-[120%] h-[120%] -left-[10%] -top-[10%] opacity-80 mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
-            <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+          <div className="absolute top-0 right-0 bottom-0 left-0 w-full h-full mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
+            <Spline
+              scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+              style={{ width: '100%', height: '100%' }}
+            />
           </div>
 
           {/* Floating text hints over the 3D scene */}
