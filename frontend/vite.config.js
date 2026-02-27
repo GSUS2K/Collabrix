@@ -12,12 +12,13 @@ export default defineConfig({
   ],
   build: {
     sourcemap: true,
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
           socket: ['socket.io-client'],
+          spline: ['@splinetool/react-spline', '@splinetool/runtime'],
         },
       },
     },
