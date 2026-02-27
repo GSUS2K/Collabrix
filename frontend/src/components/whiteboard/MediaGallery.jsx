@@ -5,15 +5,16 @@ function MediaCell({ stream, isLocal, username }) {
     const videoRef = useRef(null);
 
     useEffect(() => {
+        console.log(`MediaCell [${username}] stream:`, stream ? stream.id : 'null', 'tracks:', stream?.getTracks().length);
         if (videoRef.current && stream) {
             videoRef.current.srcObject = stream;
+            console.log(`MediaCell [${username}] attached stream to videoRef`);
         }
-    }, [stream]);
+    }, [stream, username]);
 
     if (!stream) return null;
 
-    const tracks = stream.getTracks().filter(t => t.enabled);
-    const hasVideo = stream.getVideoTracks().some(t => t.enabled && t.readyState === 'live');
+    const hasVideo = stream.getVideoTracks().some(t => t.enabled);
 
     return (
         <div className={`relative shrink-0 rounded-xl overflow-hidden bg-black/60 border border-white/10 flex items-center justify-center
