@@ -8,7 +8,7 @@ const COLORS = ['#00FFBF', '#FF6B6B', '#9B72FF', '#FFD93D', '#4ECDC4', '#FD79A8'
 
 const TIPS = [
   '💡 Press P for Pencil, E for Eraser, L for Line',
-  '🎮 Click "Game" to start a Skribbl or Gartic Phone round',
+  '🎮 Click "Game" to start a Skribbl round with your team',
   '🎨 Try the Blueprint background in the toolbar!',
   '💬 Share your room code to invite friends instantly',
   '⚡ Use the Laser pointer tool for epic presentations',
