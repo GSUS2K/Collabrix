@@ -1,24 +1,24 @@
 const WORDS = [
-  'cat','dog','elephant','giraffe','penguin','dolphin','tiger','rabbit','monkey','shark',
-  'butterfly','octopus','kangaroo','crocodile','peacock','flamingo','hedgehog','cheetah',
-  'umbrella','guitar','telescope','bicycle','toothbrush','backpack','scissors','lantern',
-  'compass','suitcase','keyboard','microphone','trophy','hourglass','anchor','binoculars',
-  'pizza','sushi','burger','watermelon','popcorn','sandwich','spaghetti','donut','taco',
-  'cupcake','strawberry','pineapple','chocolate','broccoli','avocado','pancakes','pretzel',
-  'volcano','lighthouse','castle','pyramid','igloo','windmill','treehouse','skyscraper',
-  'waterfall','cave','airport','library','stadium','greenhouse','submarine','spaceship',
-  'swimming','dancing','climbing','fishing','painting','cooking','sleeping','laughing',
-  'jumping','reading','singing','skating','surfing','gardening','hiking','juggling',
-  'rainbow','thunder','snowflake','tornado','eclipse','meteor','glacier','canyon',
-  'coral','mushroom','cactus','bamboo','sunflower','seashell','starfish','avalanche',
-  'dragon','unicorn','robot','wizard','ninja','pirate','astronaut','mermaid',
-  'saxophone','accordion','harmonica','xylophone','bagpipes','ukulele','trombone',
+  'cat', 'dog', 'elephant', 'giraffe', 'penguin', 'dolphin', 'tiger', 'rabbit', 'monkey', 'shark',
+  'butterfly', 'octopus', 'kangaroo', 'crocodile', 'peacock', 'flamingo', 'hedgehog', 'cheetah',
+  'umbrella', 'guitar', 'telescope', 'bicycle', 'toothbrush', 'backpack', 'scissors', 'lantern',
+  'compass', 'suitcase', 'keyboard', 'microphone', 'trophy', 'hourglass', 'anchor', 'binoculars',
+  'pizza', 'sushi', 'burger', 'watermelon', 'popcorn', 'sandwich', 'spaghetti', 'donut', 'taco',
+  'cupcake', 'strawberry', 'pineapple', 'chocolate', 'broccoli', 'avocado', 'pancakes', 'pretzel',
+  'volcano', 'lighthouse', 'castle', 'pyramid', 'igloo', 'windmill', 'treehouse', 'skyscraper',
+  'waterfall', 'cave', 'airport', 'library', 'stadium', 'greenhouse', 'submarine', 'spaceship',
+  'swimming', 'dancing', 'climbing', 'fishing', 'painting', 'cooking', 'sleeping', 'laughing',
+  'jumping', 'reading', 'singing', 'skating', 'surfing', 'gardening', 'hiking', 'juggling',
+  'rainbow', 'thunder', 'snowflake', 'tornado', 'eclipse', 'meteor', 'glacier', 'canyon',
+  'coral', 'mushroom', 'cactus', 'bamboo', 'sunflower', 'seashell', 'starfish', 'avalanche',
+  'dragon', 'unicorn', 'robot', 'wizard', 'ninja', 'pirate', 'astronaut', 'mermaid',
+  'saxophone', 'accordion', 'harmonica', 'xylophone', 'bagpipes', 'ukulele', 'trombone',
 ];
 
 const games = new Map();
 
-const pick3    = () => [...WORDS].sort(() => Math.random() - 0.5).slice(0, 3);
-const mask     = (w) => w.split('').map(c => c === ' ' ? ' ' : '_').join('');
+const pick3 = () => [...WORDS].sort(() => Math.random() - 0.5).slice(0, 3);
+const mask = (w) => w.split('').map(c => c === ' ' ? ' ' : '_').join('');
 const levenClose = (a, b) => {
   if (Math.abs(a.length - b.length) > 2) return false;
   let d = 0;
@@ -26,7 +26,7 @@ const levenClose = (a, b) => {
   return d <= 2;
 };
 const revealLetter = (word, shown) => {
-  const hidden = word.split('').map((c,i) => c !== ' ' && shown[i] === '_' ? i : -1).filter(i => i !== -1);
+  const hidden = word.split('').map((c, i) => c !== ' ' && shown[i] === '_' ? i : -1).filter(i => i !== -1);
   if (!hidden.length) return shown;
   const i = hidden[Math.floor(Math.random() * hidden.length)];
   return shown.split('').map((c, j) => j === i ? word[j] : c).join('');
@@ -93,7 +93,7 @@ function beginDrawing(io, roomId, word) {
   g.guessed = new Set();
 
   const drawer = g.players[g.drawerIdx];
-  io.sockets.sockets.get(drawer.socketId)?.emit('game:youDraw', { word });
+  io.to(drawer.socketId).emit('game:youDraw', { word });
 
   io.to(roomId).emit('game:roundStart', {
     shown: g.shown,
@@ -134,7 +134,7 @@ function startTurn(io, roomId) {
     maxRounds: g.maxRounds,
   });
 
-  io.sockets.sockets.get(drawer.socketId)?.emit('game:pickWord', { words });
+  io.to(drawer.socketId).emit('game:pickWord', { words });
 
   g.chooseTimer = setTimeout(() => {
     const g2 = games.get(roomId);
