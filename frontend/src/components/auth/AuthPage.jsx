@@ -26,10 +26,10 @@ export default function AuthPage() {
 
   // Load BMaC official widget (hides their floating button, we trigger it ourselves)
   useEffect(() => {
-    // Hide BMaC's default floating button via CSS
+    // Move BMaC's default floating button off-screen (display:none blocks clicks)
     const style = document.createElement('style');
     style.id = 'bmc-hide-btn';
-    style.textContent = '#bmc-wbtn { display: none !important; }';
+    style.textContent = '#bmc-wbtn { position: fixed !important; left: -9999px !important; bottom: -9999px !important; opacity: 0 !important; pointer-events: none !important; }';
     document.head.appendChild(style);
 
     // Inject BMaC widget script
@@ -55,8 +55,20 @@ export default function AuthPage() {
   }, []);
 
   const openDonation = () => {
-    // Trigger BMaC's own widget panel (stays on site)
-    document.getElementById('bmc-wbtn')?.click();
+    logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
+    // Poll until BMaC widget button is ready, then trigger it
+    const tryClick = (attempts = 0) => {
+      const btn = document.getElementById('bmc-wbtn');
+      if (btn) {
+        // Temporarily make it clickable
+        btn.style.pointerEvents = 'auto';
+        btn.click();
+        btn.style.pointerEvents = 'none';
+      } else if (attempts < 25) {
+        setTimeout(() => tryClick(attempts + 1), 200);
+      }
+    };
+    tryClick();
   };
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
