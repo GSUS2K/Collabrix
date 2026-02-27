@@ -145,7 +145,7 @@ export default function Dashboard() {
   const rooms = activeTab === 'my' ? myRooms : publicRooms;
 
   return (
-    <div className="relative min-h-screen bg-brand-dark text-white font-sans flex flex-col overflow-y-auto">
+    <div className="relative min-h-screen bg-brand-dark text-white font-sans flex flex-col overflow-x-hidden">
       {/* Ambient Orbs — fixed so they don't affect scroll height */}
       <div className="fixed top-[-20%] right-[-10%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[130px] pointer-events-none animate-[pulse_9s_infinite] z-0" />
       <div className="fixed bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[110px] pointer-events-none animate-[pulse_11s_infinite_3s] z-0" />
