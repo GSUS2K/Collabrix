@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import Spline from '@splinetool/react-spline';
 import toast from 'react-hot-toast';
-
 const CYCLING_WORDS = ['Together.', 'Creatively.', 'In Real-Time.', 'Effortlessly.', 'With Friends.'];
 
 const FEATURES = [
@@ -93,10 +93,10 @@ export default function AuthPage() {
         </div>
       ))}
 
-      {/* ── Left Side (Branding) ── */}
-      <div className="flex-1 flex flex-col justify-center gap-12 p-8 md:p-16 z-10 min-h-[50vh] md:min-h-screen">
+      {/* ── Left Side (Content & Form) ── */}
+      <div className="flex-1 lg:flex-[0.8] xl:flex-[0.6] flex flex-col justify-center p-8 md:p-12 lg:p-20 z-10 min-h-screen relative overflow-y-auto custom-scrollbar">
         {/* Logo */}
-        <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out]">
+        <div className="flex items-center gap-3 animate-[fadeIn_0.5s_ease-out] mb-12">
           <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)] hover:scale-110 transition-transform cursor-default">
             <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
               <path d="M8 20 Q14 10 20 20 Q26 30 32 20" stroke="#00FFBF" strokeWidth="3" strokeLinecap="round" fill="none" />
@@ -136,7 +136,7 @@ export default function AuthPage() {
           </p>
 
           {/* Feature Pills */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-12">
             {FEATURES.map(({ icon, title, desc }, i) => (
               <div
                 key={title}
@@ -151,22 +151,9 @@ export default function AuthPage() {
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Footer */}
-        <footer className="text-white/30 text-xs font-medium tracking-wide mt-8 md:mt-0">
-          Made with <span className="text-brand-red animate-[pulse_2s_infinite] inline-block">❤️</span> by{' '}
-          <span className="font-bold text-white/50 hover:text-brand-accent transition-colors cursor-default">GSUS</span>{' '}
-          using the <span className="font-bold bg-white/5 px-1.5 py-0.5 rounded text-white/40">MERN</span> stack
-        </footer>
-      </div>
-
-      {/* ── Right Side (Auth Form) ── */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 z-10">
-        <div className="w-full max-w-[420px] animate-[slideInUp_0.8s_ease-out]">
-
-          {/* Card */}
-          <div className="bg-brand-card/80 backdrop-blur-2xl border border-white/10 rounded-[28px] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.5)]">
+          {/* Form Card embedded in left column */}
+          <div className="w-full max-w-[480px] bg-brand-card/60 backdrop-blur-3xl border border-white/10 rounded-[28px] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.5)] animate-[slideInUp_0.8s_ease-out]">
             {/* Tab Switcher */}
             <div className="flex bg-white/5 rounded-xl p-1 mb-8 border border-white/5">
               {['login', 'register'].map((m) => (
@@ -271,6 +258,22 @@ export default function AuthPage() {
           <p className="text-center mt-4 text-[11px] text-white/20">
             By continuing, you agree to our Terms of Service
           </p>
+        </div>
+
+        {/* ── Right Side (Interactive 3D / Graphics) ── */}
+        <div className="hidden lg:flex flex-1 relative bg-black/20 border-l border-white/5 z-0 items-center justify-center overflow-hidden">
+          {/* A beautiful interactive abstract 3D keyboard/glass scene from Spline Community */}
+          <div className="absolute inset-0 w-[120%] h-[120%] -left-[10%] -top-[10%] opacity-80 mix-blend-screen pointer-events-auto cursor-grab active:cursor-grabbing">
+            <Spline scene="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode" />
+          </div>
+
+          {/* Floating text hints over the 3D scene */}
+          <div className="absolute bottom-12 right-12 z-10 pointer-events-none text-right">
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10 shadow-2xl animate-[slideInUp_1s_ease-out]">
+              <span className="text-brand-accent animate-[pulse_1s_infinite]">👆</span>
+              <span className="text-white/60 text-xs font-bold tracking-widest uppercase">Drag to play</span>
+            </div>
+          </div>
         </div>
       </div>
 
