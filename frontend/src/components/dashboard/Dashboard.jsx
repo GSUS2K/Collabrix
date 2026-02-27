@@ -66,10 +66,7 @@ export default function Dashboard() {
   const handleLogoClick = () => {
     const next = logoClicks + 1;
     setLogoClicks(next);
-    if (next === 7) {
-      setLogoClicks(0);
-      toast('🕵️ You found a secret! psst: try typing a certain retro game\'s name in a room...', { duration: 5000, icon: '👾' });
-    }
+    if (next === 7) setLogoClicks(0); // reset silently
   };
 
   const createRoom = async (e) => {
