@@ -191,7 +191,7 @@ export default function Dashboard() {
               rel="noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-yellow/10 hover:bg-brand-yellow/20 border border-brand-yellow/20 rounded-full text-[10px] font-bold text-brand-yellow uppercase tracking-wider transition-all hover:scale-105 hover:shadow-[0_0_15px_rgba(255,217,61,0.2)]"
             >
-              <span className="text-sm">🧊☕</span> Cold Coffee (Max $5)
+              <span className="text-sm">🥤</span> Cold Coffee (Max $5)
             </a>
           </div>
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 pr-4 pl-1.5 hover:bg-white/10 transition-all cursor-default" style={{ borderColor: user?.color ? `${user.color}40` : '' }}>
