@@ -24,52 +24,7 @@ export default function AuthPage() {
   const { login, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
-  // Load BMaC official widget (hides their floating button, we trigger it ourselves)
-  useEffect(() => {
-    // Move BMaC's default floating button off-screen (display:none blocks clicks)
-    const style = document.createElement('style');
-    style.id = 'bmc-hide-btn';
-    style.textContent = '#bmc-wbtn { position: fixed !important; left: -9999px !important; bottom: -9999px !important; opacity: 0 !important; pointer-events: none !important; }';
-    document.head.appendChild(style);
 
-    // Inject BMaC widget script
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js';
-    script.setAttribute('data-name', 'BMC-Widget');
-    script.setAttribute('data-cfasync', 'false');
-    script.setAttribute('data-id', 'gsus2k');
-    script.setAttribute('data-description', 'Hope Collabrix was a fun experience! ❄️ Buy me a cold coffee if you liked it!');
-    script.setAttribute('data-message', '');
-    script.setAttribute('data-color', '#00FFBF');
-    script.setAttribute('data-position', 'Right');
-    script.setAttribute('data-x_margin', '18');
-    script.setAttribute('data-y_margin', '18');
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup on unmount
-      document.getElementById('bmc-hide-btn')?.remove();
-      document.getElementById('bmc-wbtn')?.remove();
-      script.remove();
-    };
-  }, []);
-
-  const openDonation = () => {
-    logEvent('Monetization', 'Click Buy Me A Coffee', 'Auth Page');
-    // Poll until BMaC widget button is ready, then trigger it
-    const tryClick = (attempts = 0) => {
-      const btn = document.getElementById('bmc-wbtn');
-      if (btn) {
-        // Temporarily make it clickable
-        btn.style.pointerEvents = 'auto';
-        btn.click();
-        btn.style.pointerEvents = 'none';
-      } else if (attempts < 25) {
-        setTimeout(() => tryClick(attempts + 1), 200);
-      }
-    };
-    tryClick();
-  };
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
