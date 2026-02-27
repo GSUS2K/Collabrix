@@ -129,6 +129,7 @@ export default function Dashboard() {
     try {
       await api.delete(`/api/rooms/${id}`);
       setMyRooms(r => r.filter(x => x._id !== id));
+      setPublicRooms(r => r.filter(x => x._id !== id));
       toast.success('Room deleted');
     } catch { toast.error('Failed to delete room'); }
   };
