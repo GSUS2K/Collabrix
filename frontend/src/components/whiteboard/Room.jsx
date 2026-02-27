@@ -12,6 +12,7 @@ import ChatPanel from './ChatPanel';
 import UserList from './UserList';
 import GameMode from './GameMode';
 import MediaGallery from './MediaGallery';
+import PacmanEasterEgg from './PacmanEasterEgg';
 
 // Floating reaction component
 function ReactionBurst({ reactions }) {
@@ -51,13 +52,31 @@ export default function Room() {
   const [gameLocked, setGameLocked] = useState(false);
   const [reactions, setReactions] = useState([]);
   const [connected, setConnected] = useState(false);
+  const [showPacman, setShowPacman] = useState(false);
   const saveTimer = useRef(null);
+  const pacmanSeqRef = useRef('');
 
   const isHost = me?.isHost || false;
   const canDraw = !gameLocked;
 
   const canvas = useCanvas({ socket, roomId, canDraw });
   const webrtc = useWebRTC(socket, roomId, socket?.id);
+
+  // 🕹️ Pac-Man easter egg: type "pacman" anywhere (not in an input)
+  useEffect(() => {
+    const SEQUENCE = 'pacman';
+    const handler = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+      pacmanSeqRef.current = (pacmanSeqRef.current + e.key).slice(-SEQUENCE.length);
+      if (pacmanSeqRef.current === SEQUENCE) {
+        setShowPacman(true);
+        pacmanSeqRef.current = '';
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   // ── Join ───────────────────────────────────────────────
   useEffect(() => {
@@ -336,6 +355,9 @@ export default function Room() {
 
           {/* Reaction Burst */}
           <ReactionBurst reactions={reactions} />
+
+          {/* 🕹️ Easter egg */}
+          {showPacman && <PacmanEasterEgg onClose={() => setShowPacman(false)} />}
 
           {/* WebRTC Video/Audio Gallery — needs pointer-events-auto, outside the restrictions */}
         </div>

@@ -68,7 +68,7 @@ export default function Dashboard() {
     setLogoClicks(next);
     if (next === 7) {
       setLogoClicks(0);
-      toast('🕵️ You found a secret! psst: try the Konami code in a room', { duration: 5000, icon: '🎉' });
+      toast('🕵️ You found a secret! psst: try typing a certain retro game\'s name in a room...', { duration: 5000, icon: '👾' });
     }
   };
 
