@@ -58,7 +58,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
   };
 
   return (
-    <div className="flex flex-col h-full bg-brand-dark/40">
+    <div className="flex flex-col h-full overflow-hidden bg-brand-dark/40">
 
       {/* Header */}
       <div className="flex justify-between items-center px-4 py-3 border-b border-white/5 bg-white/[0.02]">
@@ -117,8 +117,8 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
               )}
               <div
                 className={`max-w-[85%] px-3.5 py-2 text-sm rounded-2xl break-words leading-relaxed border ${isMe
-                    ? 'rounded-tr-sm text-white'
-                    : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm'
+                  ? 'rounded-tr-sm text-white'
+                  : 'bg-white/5 border-white/10 text-white/90 rounded-tl-sm'
                   }`}
                 style={isMe ? { background: `${userColor}22`, borderColor: `${userColor}44` } : {}}
               >

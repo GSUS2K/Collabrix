@@ -300,7 +300,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   // ── In-game HUD (choosing-waiting + drawing + turnEnd) ──
   return (
     <Draggable nodeRef={hudRef} handle=".game-drag-handle" bounds="parent">
-      <div ref={hudRef} className="absolute z-40 top-4 right-4 w-[320px] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
+      <div ref={hudRef} className="absolute z-40 top-4 right-4 w-[320px] max-h-[85vh] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
 
         {/* Turn end flash */}
         {phase === 'turnEnd' && (

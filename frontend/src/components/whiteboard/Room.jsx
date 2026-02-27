@@ -379,7 +379,7 @@ export default function Room() {
 
         {/* Side Panels */}
         {panel && (
-          <div className="w-[320px] h-full flex-shrink-0 border-l border-white/5 bg-brand-dark/95 backdrop-blur-xl relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-[slideInRight_0.3s_cubic-bezier(0.4,0,0.2,1)]">
+          <div className="w-[320px] h-full flex-shrink-0 overflow-hidden border-l border-white/5 bg-brand-dark/95 backdrop-blur-xl relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-[slideInRight_0.3s_cubic-bezier(0.4,0,0.2,1)]">
             {panel === 'chat' && (
               <ChatPanel
                 messages={messages}
