@@ -25,7 +25,7 @@ export default function Dashboard() {
   const [myRooms, setMyRooms] = useState([]);
   const [publicRooms, setPublicRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('my'); 
+  const [activeTab, setActiveTab] = useState('my');
   const [creating, setCreating] = useState(false);
   const [joining, setJoining] = useState(false);
   const [newName, setNewName] = useState('');
@@ -37,8 +37,8 @@ export default function Dashboard() {
   const [logoClicks, setLogoClicks] = useState(0);
   const [tipIdx, setTipIdx] = useState(0);
   const [hoveredRoom, setHoveredRoom] = useState(null);
-  
-  const [joinPasswordModal, setJoinPasswordModal] = useState(null); 
+
+  const [joinPasswordModal, setJoinPasswordModal] = useState(null);
   const [joinPasswordInput, setJoinPasswordInput] = useState('');
   const [joinPasswordError, setJoinPasswordError] = useState('');
 
@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   useEffect(() => { loadRooms(); }, [loadRooms]);
 
-  
+
   useEffect(() => {
     const id = setInterval(() => setTipIdx(i => (i + 1) % TIPS.length), 4000);
     return () => clearInterval(id);
@@ -158,13 +158,13 @@ export default function Dashboard() {
 
   return (
     <div className="relative min-h-screen bg-brand-dark text-white font-sans flex flex-col">
-      {}
+      { }
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[-20%] right-[-10%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[130px] animate-[pulse_9s_infinite]" />
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[110px] animate-[pulse_11s_infinite_3s]" />
       </div>
 
-      {}
+      { }
       <header className="relative flex justify-between items-center px-6 py-4 md:px-12 backdrop-blur-md border-b border-white/5 bg-brand-dark/50 z-10 flex-shrink-0">
         <div
           className="flex items-center gap-3 cursor-pointer group select-none"
@@ -184,7 +184,7 @@ export default function Dashboard() {
             <span className="text-xs text-white/40 font-medium whitespace-nowrap" key={tipIdx}>{TIPS[tipIdx]}</span>
           </div>
 
-          {}
+          { }
           <div className="hidden sm:flex items-center gap-3 mr-2 sm:mr-4 pr-2 sm:pr-4 border-r border-white/10">
             <a
               href="https://github.com/GSUS2K"
@@ -210,10 +210,10 @@ export default function Dashboard() {
         </div>
       </header>
 
-      {}
+      { }
       <main className="relative flex-1 max-w-6xl w-full mx-auto px-6 py-10 pb-24 z-10">
 
-        {}
+        { }
         <div className="mb-10 animate-[slideInUp_0.4s_ease-out]">
           <p className="text-brand-accent/80 text-sm font-bold uppercase tracking-widest mb-1">Welcome back 👋</p>
           <h1 className="text-4xl md:text-5xl font-display font-black">
@@ -224,7 +224,7 @@ export default function Dashboard() {
           </p>
         </div>
 
-        {}
+        { }
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           <button
             className="group flex items-center gap-5 p-6 rounded-2xl bg-gradient-to-br from-brand-accent/10 to-brand-accent/5 border border-brand-accent/20 cursor-pointer transition-all hover:from-brand-accent/20 hover:to-brand-accent/10 hover:-translate-y-1 hover:shadow-[0_10px_40px_rgba(0,255,191,0.15)] animate-[slideInUp_0.5s_ease-out] text-left"
@@ -263,7 +263,7 @@ export default function Dashboard() {
           </form>
         </div>
 
-        {}
+        { }
         <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
           {[
             { key: 'my', label: 'My Rooms', count: myRooms.length, icon: '🔒' },
@@ -291,7 +291,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {}
+        { }
         {loading ? (
           <div className="flex justify-center items-center py-24">
             <div className="relative">
@@ -324,7 +324,7 @@ export default function Dashboard() {
             {rooms.map((room, i) => {
               const accentColor = COLORS[i % COLORS.length];
               const isHovered = hoveredRoom === room._id;
-              
+
               const isOwner = user?.id && room.host && String(room.host) === String(user.id);
               return (
                 <div
@@ -338,13 +338,13 @@ export default function Dashboard() {
                   onMouseEnter={() => setHoveredRoom(room._id)}
                   onMouseLeave={() => setHoveredRoom(null)}
                 >
-                  {}
+                  { }
                   <div
                     className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
                     style={{ background: `radial-gradient(ellipse at top left, ${accentColor}08, transparent 60%)` }}
                   />
 
-                  {}
+                  { }
                   {isOwner && (
                     <button
                       className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/40 text-white/40 opacity-0 group-hover:opacity-100 outline-none hover:bg-brand-red hover:text-white transition-all z-10 hover:scale-110 hover:rotate-12"
@@ -355,7 +355,7 @@ export default function Dashboard() {
                     </button>
                   )}
 
-                  {}
+                  { }
                   <div
                     className="w-full h-28 rounded-xl mb-4 flex items-center justify-center overflow-hidden relative"
                     style={{ background: `linear-gradient(135deg, ${accentColor}25, ${accentColor}05)` }}
@@ -373,7 +373,7 @@ export default function Dashboard() {
                   <div className="flex-1 relative z-10">
                     <div className="flex items-center gap-2 mb-2">
                       <h3 className="text-base font-bold text-white/90 truncate flex-1 group-hover:text-white transition-colors">{room.name}</h3>
-                      {}
+                      { }
                       {room.isPublic ? (
                         <span className="flex items-center gap-1 text-[10px] font-black px-1.5 py-0.5 rounded bg-brand-accent/10 text-brand-accent border border-brand-accent/20 flex-shrink-0">
                           🌐
@@ -409,16 +409,16 @@ export default function Dashboard() {
         )}
       </main>
 
-      {}
+      { }
       <footer className="relative z-10 w-full py-5 border-t border-white/5 text-center flex-shrink-0">
         <p className="text-white/25 text-xs font-medium tracking-wide flex items-center justify-center gap-2">
           Made with <span className="text-brand-red animate-[pulse_2s_infinite]">❤️</span> by{' '}
           <span className="font-bold text-white/40 hover:text-brand-accent transition-colors cursor-default">GSUS</span>{' '}
-          using the <span className="font-bold bg-white/5 px-2 py-0.5 rounded text-white/35">MERN</span> stack
+          using <span className="font-bold bg-white/5 px-2 py-0.5 rounded text-white/35">MERN</span> stack
         </p>
       </footer>
 
-      {}
+      { }
       {showCreate && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-[fadeIn_0.2s_ease-out]"
@@ -454,7 +454,7 @@ export default function Dashboard() {
                 maxLength={40}
               />
 
-              {}
+              { }
               <div
                 className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${isPublic ? 'bg-brand-accent/10 border-brand-accent/30' : 'bg-white/[0.03] border-white/10 hover:bg-white/[0.06]'}`}
                 onClick={() => { setIsPublic(p => !p); if (!isPublic) setRoomPassword(''); }}
@@ -470,7 +470,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {}
+              { }
               {isPublic && (
                 <div className="animate-[slideInUp_0.2s_ease-out]">
                   <label className="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-1.5">
@@ -511,7 +511,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {}
+      { }
       {joinPasswordModal && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-[fadeIn_0.2s_ease-out]"
@@ -552,7 +552,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      {}
+      { }
       <DonationModal
         isOpen={showDonationModal}
         onClose={() => setShowDonationModal(false)}
