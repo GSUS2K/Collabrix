@@ -164,8 +164,8 @@ export default function Dashboard() {
       <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
         <Spline
           // scene="https://prod.spline.design/UmsHybi3chiUapYV/scene.splinecode"
-          // scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
-          scene="https://prod.spline.design/8h54p4oGm9FM39lk/scene.splinecode"
+          scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
+          // scene="https://prod.spline.design/8h54p4oGm9FM39lk/scene.splinecode"
           style={{ width: '100%', height: '100%' }}
         />
       </div>
