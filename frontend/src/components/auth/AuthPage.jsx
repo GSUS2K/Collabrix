@@ -68,28 +68,30 @@ export default function AuthPage() {
   return (
     <div className="relative min-h-screen font-sans bg-brand-dark">
 
-      {}
+      { }
       <div className="fixed inset-0 z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Spline
-          scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
+          // scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
+          // scene="https://prod.spline.design/8h54p4oGm9FM39lk/scene.splinecode"
+          scene="https://prod.spline.design/j416K4JBUMnhtDpP/scene.splinecode"
           style={{ width: '100%', height: '100%' }}
         />
       </div>
 
-      {}
+      { }
       <div className="fixed inset-0 z-10 pointer-events-none"
         style={{
           background: 'radial-gradient(ellipse 80% 80% at 60% 50%, transparent 0%, rgba(12,12,15,0.55) 60%, rgba(12,12,15,0.92) 100%)',
         }}
       />
-      {}
+      { }
       <div className="fixed inset-0 z-10 pointer-events-none"
         style={{
           background: 'linear-gradient(to right, rgba(12,12,15,0.75) 0%, rgba(12,12,15,0.1) 50%, transparent 100%)',
         }}
       />
 
-      {}
+      { }
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none hidden lg:block">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/30 backdrop-blur-md border border-white/10 shadow-xl animate-[slideInUp_1.5s_ease-out]">
           <span className="text-brand-accent animate-[pulse_1.5s_infinite]">👆</span>
@@ -97,12 +99,12 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {}
+      { }
       <div className="relative z-20 w-full min-h-screen flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16 xl:gap-24 px-6 py-10 lg:py-0 lg:px-16 xl:px-20 pointer-events-none">
 
-        {}
+        { }
         <div className="flex-shrink-0 w-full max-w-md lg:max-w-lg pointer-events-none animate-[slideInUp_0.7s_ease-out]">
-          {}
+          { }
           <div className="flex items-center gap-3 mb-10">
             <div className="relative w-10 h-10 flex items-center justify-center bg-brand-accent/15 rounded-xl border border-brand-accent/30 shadow-[0_0_20px_rgba(0,255,191,0.2)]">
               <svg width="24" height="24" viewBox="0 0 40 40" fill="none">
@@ -113,13 +115,13 @@ export default function AuthPage() {
             <span className="text-2xl font-display font-bold tracking-wide text-white">Collabrix</span>
           </div>
 
-          {}
+          { }
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-accent/10 border border-brand-accent/20 text-brand-accent text-xs font-bold uppercase tracking-widest mb-6">
             <span className="w-2 h-2 rounded-full bg-brand-accent animate-[pulse_1.5s_infinite]" />
             Live &amp; Free — No credit card needed
           </div>
 
-          {}
+          { }
           <h1 className="text-5xl md:text-6xl xl:text-7xl font-display font-black leading-[1.05] mb-5 tracking-tight drop-shadow-2xl">
             Create.<br />
             Collaborate.<br />
@@ -140,7 +142,7 @@ export default function AuthPage() {
             The canvas where ideas become art. Draw, game, voice-chat, and react — all inside one powerful collaborative space built for creators.
           </p>
 
-          {}
+          { }
           <div className="hidden md:grid grid-cols-2 gap-3 max-w-sm">
             {FEATURES.map(({ icon, title, desc }) => (
               <div
@@ -157,10 +159,10 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {}
+        { }
         <div className="pointer-events-auto w-full max-w-[420px] bg-white/[0.06] backdrop-blur-2xl border border-white/[0.12] rounded-[28px] p-8 shadow-[0_30px_80px_rgba(0,0,0,0.6)] animate-[slideInUp_0.9s_ease-out] flex-shrink-0">
 
-          {}
+          { }
           <div className="flex bg-white/5 rounded-xl p-1 mb-7 border border-white/5">
             {['login', 'register'].map((m) => (
               <button
@@ -173,7 +175,7 @@ export default function AuthPage() {
             ))}
           </div>
 
-          {}
+          { }
           <div className="flex justify-center mb-5 relative z-20">
             <GoogleLogin
               onSuccess={onGoogleSuccess}
@@ -186,14 +188,14 @@ export default function AuthPage() {
             />
           </div>
 
-          {}
+          { }
           <div className="flex items-center mb-5 text-white/25 text-[10px] font-black tracking-[0.2em]">
             <div className="flex-1 h-px bg-white/10" />
             <span className="px-4">OR</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
 
-          {}
+          { }
           <form className="flex flex-col gap-4" onSubmit={submit}>
             {mode === 'register' && (
               <div className="animate-[slideInUp_0.3s_ease-out]">
@@ -260,7 +262,7 @@ export default function AuthPage() {
             </button>
           </p>
 
-          {}
+          { }
           <div className="flex items-center justify-center gap-3 mt-6 pt-5 border-t border-white/[0.07]">
             <a
               href="https://github.com/GSUS2K"
@@ -281,7 +283,7 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {}
+      { }
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
