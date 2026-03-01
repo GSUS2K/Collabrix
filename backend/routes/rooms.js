@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Room = require('../models/Room');
 const { protect } = require('../middleware/auth');
 
-// POST /api/rooms  — create
+
 router.post('/', protect, async (req, res) => {
   try {
     const { name, isPublic, password } = req.body;
@@ -22,7 +22,7 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
-// GET /api/rooms/my  — my rooms
+
 router.get('/my', protect, async (req, res) => {
   try {
     const rooms = await Room.find({ host: req.user.id }).sort({ lastActive: -1 }).limit(20)
@@ -33,7 +33,7 @@ router.get('/my', protect, async (req, res) => {
   }
 });
 
-// GET /api/rooms/public  — publicly listed rooms (browse)
+
 router.get('/public', protect, async (req, res) => {
   try {
     const rooms = await Room.find({ isPublic: true }).sort({ lastActive: -1 }).limit(50)
@@ -44,7 +44,7 @@ router.get('/public', protect, async (req, res) => {
   }
 });
 
-// GET /api/rooms/join/:code  — find by code
+
 router.get('/join/:code', protect, async (req, res) => {
   try {
     const room = await Room.findOne({ code: req.params.code.toUpperCase() });
@@ -55,7 +55,7 @@ router.get('/join/:code', protect, async (req, res) => {
   }
 });
 
-// POST /api/rooms/:id/verify-password  — verify room password
+
 router.post('/:id/verify-password', protect, async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -68,7 +68,7 @@ router.post('/:id/verify-password', protect, async (req, res) => {
   }
 });
 
-// GET /api/rooms/:id  — get room
+
 router.get('/:id', protect, async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);
@@ -79,7 +79,7 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
-// PATCH /api/rooms/:id/canvas  — save canvas
+
 router.patch('/:id/canvas', protect, async (req, res) => {
   try {
     const { canvasData } = req.body;
@@ -90,7 +90,7 @@ router.patch('/:id/canvas', protect, async (req, res) => {
   }
 });
 
-// DELETE /api/rooms/:id  — delete room
+
 router.delete('/:id', protect, async (req, res) => {
   try {
     const room = await Room.findById(req.params.id);

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 
 export default function GameMode({ socket, roomId, username, isHost, onDrawingLock, onClose }) {
-  const [phase, setPhase] = useState('lobby'); // lobby|choosing|drawing|turnEnd|over
+  const [phase, setPhase] = useState('lobby'); 
   const [players, setPlayers] = useState([]);
   const [drawer, setDrawer] = useState('');
   const [drawerSid, setDrawerSid] = useState('');
@@ -20,11 +20,11 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   const [settings, setSettings] = useState({ rounds: 3, turnTime: 80 });
   const logRef = useRef(null);
   const logIdRef = useRef(0);
-  const hudRef = useRef(null); // For Draggable nodeRef
+  const hudRef = useRef(null); 
 
   const amDrawing = drawerSid === socket?.id && phase === 'drawing';
 
-  // Escape key to close lobby / word-pick overlays
+  
   useEffect(() => {
     const handler = (e) => {
       if (e.key === 'Escape' && (phase === 'lobby' || (phase === 'choosing' && wordChoices.length > 0))) {
@@ -35,13 +35,13 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     return () => window.removeEventListener('keydown', handler);
   }, [phase, wordChoices, onClose]);
 
-  // Lock drawing for non-drawers
+  
   useEffect(() => {
     const locked = (phase === 'drawing' || phase === 'choosing') && drawerSid !== socket?.id;
     onDrawingLock?.(locked);
   }, [phase, drawerSid, socket, onDrawingLock]);
 
-  // Socket listeners
+  
   useEffect(() => {
     if (!socket) return;
 
@@ -60,7 +60,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       addLog('system', `Round ${r}/${mr} — ${d} is picking a word...`);
     });
 
-    // Keep legacy listener just in case
+    
     socket.on('game:pickWord', ({ words }) => setWordChoices(words));
 
     socket.on('game:youDraw', ({ word }) => {
@@ -104,7 +104,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       setPhase('over');
     });
 
-    // Game stopped by host — reset to lobby (don't close, just show lobby again)
+    
     socket.on('game:stopped', () => {
       setPhase('lobby');
       setPlayers([]);
@@ -114,7 +114,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       setMyWord('');
     });
 
-    // Restore state after refresh
+    
     socket.on('game:sync', ({ status, players: p, round: r, maxRounds: mr, turnTime: tt,
       drawer: d, drawerSocketId: dsid, shown, wordLen, word }) => {
       setPlayers(p); setRound(r); setMaxRounds(mr); setMaxTime(tt);
@@ -156,7 +156,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
   const timerPct = (timer / maxTime) * 100;
   const timerColor = timer <= 10 ? '#FF6B6B' : timer <= 20 ? '#FFD93D' : '#00FFBF';
 
-  // ── Word picking overlay ─────────────────────────────────
+  
   if (phase === 'choosing' && wordChoices.length > 0) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-[fadeIn_0.2s]">
@@ -179,7 +179,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     );
   }
 
-  // ── Lobby ───────────────────────────────────────────────
+  
   if (phase === 'lobby') {
     return (
       <div
@@ -188,7 +188,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
       >
         <div
           className="bg-brand-card border border-white/10 p-8 rounded-3xl shadow-2xl max-w-sm w-full animate-[slideInUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]"
-          onClick={e => e.stopPropagation()} // prevent backdrop click from firing through card
+          onClick={e => e.stopPropagation()} 
         >
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     );
   }
 
-  // ── Game Over ────────────────────────────────────────────
+  
   if (phase === 'over') {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md animate-[fadeIn_0.3s]">
@@ -297,12 +297,12 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
     );
   }
 
-  // ── In-game HUD (choosing-waiting + drawing + turnEnd) ──
+  
   return (
     <Draggable nodeRef={hudRef} handle=".game-drag-handle" bounds="parent">
       <div ref={hudRef} className="absolute z-40 top-4 right-4 w-[320px] max-h-[85vh] bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-[slideInRight_0.4s_ease-out]">
 
-        {/* Turn end flash */}
+        {}
         {phase === 'turnEnd' && (
           <div className="absolute inset-0 z-30 bg-brand-dark/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-[fadeIn_0.2s]">
             <span className="text-5xl mb-4">⏰</span>
@@ -315,7 +315,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           </div>
         )}
 
-        {/* Choosing-waiting overlay (drawer is picking, others wait) */}
+        {}
         {phase === 'choosing' && wordChoices.length === 0 && (
           <div className="absolute inset-0 z-20 bg-brand-dark/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
             <div className="text-4xl mb-3 animate-[pulse_1s_infinite]">🤔</div>
@@ -324,7 +324,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           </div>
         )}
 
-        {/* Timer bar */}
+        {}
         <div className="h-1.5 w-full bg-brand-dark flex-shrink-0">
           <div
             className="h-full transition-all duration-1000 ease-linear rounded-r-full"
@@ -332,9 +332,9 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           />
         </div>
 
-        {/* HUD top */}
+        {}
         <div className="p-4 bg-white/[0.02] border-b border-white/5 flex flex-col relative overflow-hidden flex-shrink-0">
-          {/* Drag Handle */}
+          {}
           <div className="game-drag-handle flex justify-center pb-2 cursor-grab active:cursor-grabbing hover:bg-white/5 -mt-2 -mx-4 mb-2 opacity-50 transition-colors">
             <div className="w-12 h-1.5 bg-white/20 rounded-full" />
           </div>
@@ -346,7 +346,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             <div className="text-base font-black font-mono pr-12" style={{ color: timerColor }}>⏱ {timer}s</div>
           </div>
 
-          {/* Word display */}
+          {}
           <div className="flex justify-center mb-2 min-h-[40px] items-center">
             {amDrawing ? (
               <div className="flex flex-col items-center">
@@ -375,7 +375,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
             )}
           </div>
 
-          {/* Stop game button — prominent, dedicated placement */}
+          {}
           {isHost && (
             <button
               className="absolute top-8 right-3 text-[10px] font-bold uppercase tracking-wider text-brand-red/60 hover:text-brand-red transition-colors z-10 bg-brand-dark/50 hover:bg-brand-red/10 px-2 py-1 rounded border border-transparent hover:border-brand-red/30"
@@ -387,7 +387,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           )}
         </div>
 
-        {/* Scoreboard */}
+        {}
         <div className="max-h-[120px] overflow-y-auto p-2 grid grid-cols-2 gap-2 bg-brand-dark/30 border-b border-white/5 hide-scrollbar flex-shrink-0">
           {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
             <div
@@ -405,7 +405,7 @@ export default function GameMode({ socket, roomId, username, isHost, onDrawingLo
           ))}
         </div>
 
-        {/* Guess log + input */}
+        {}
         <div className="flex-1 min-h-[180px] flex flex-col bg-brand-dark/10 overflow-hidden">
           <div className="flex-1 overflow-y-auto p-3 space-y-1.5 text-sm hide-scrollbar" ref={logRef}>
             {guessLog.slice(-20).map(g => (

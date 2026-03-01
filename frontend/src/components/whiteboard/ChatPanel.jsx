@@ -38,7 +38,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
     const t = text.trim();
     if (!t || !socket) return;
 
-    // Easter egg: confetti on certain messages
+    
     if (CONFETTI_TRIGGERS.some(trig => t.toLowerCase().includes(trig.toLowerCase()))) {
       setTimeout(spawnConfetti, 100);
     }
@@ -48,7 +48,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
   };
 
   const sendReaction = (emoji) => {
-    // Spawn between 10% and 90% width, starting at 90% height
+    
     const x = Math.floor(Math.random() * 80) + 10;
     const y = 90;
     socket?.emit('reaction:send', { roomId, emoji, x, y });
@@ -63,7 +63,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
   return (
     <div className="flex flex-col h-full overflow-hidden bg-brand-dark/40">
 
-      {/* Header */}
+      {}
       <div className="flex justify-between items-center px-4 py-3 border-b border-white/5 bg-white/[0.02]">
         <span className="font-display font-bold text-white/90">Chat</span>
         <div className="relative">
@@ -75,7 +75,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
             😀
           </button>
 
-          {/* Reaction Bar */}
+          {}
           {showEmoji && (
             <div className="absolute right-0 top-10 flex bg-brand-card border border-white/10 p-1.5 rounded-xl shadow-2xl z-50 animate-[slideInRight_0.2s_ease-out]">
               {REACTIONS.map(e => (
@@ -92,7 +92,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
         </div>
       </div>
 
-      {/* Messages Area */}
+      {}
       <div className="flex-1 overflow-y-auto p-4 space-y-4 hide-scrollbar">
         {messages.length === 0 && (
           <div className="h-full flex flex-col items-center justify-center text-white/30 text-sm">
@@ -136,7 +136,7 @@ export default function ChatPanel({ messages, socket, roomId, username, userColo
         <div ref={endRef} />
       </div>
 
-      {/* Input Row */}
+      {}
       <div className="p-3 bg-brand-dark border-t border-white/5">
         <div className="flex bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-brand-accent focus-within:ring-1 focus-within:ring-brand-accent transition-all">
           <input

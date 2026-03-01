@@ -3,16 +3,16 @@ import Peer from 'simple-peer';
 import toast from 'react-hot-toast';
 
 export const useWebRTC = (socket, roomId, myId) => {
-    const [peers, setPeers] = useState([]); // { peerId, peer, stream }
+    const [peers, setPeers] = useState([]); 
     const [localStream, setLocalStream] = useState(null);
     const [audioEnabled, setAudioEnabled] = useState(false);
     const [videoEnabled, setVideoEnabled] = useState(false);
     const [screenEnabled, setScreenEnabled] = useState(false);
 
-    const peersRef = useRef({}); // socketId -> Peer instance
+    const peersRef = useRef({}); 
     const streamRef = useRef(null);
 
-    // Sync state locally and globally
+    
     const updateMediaState = (type, isEnabled) => {
         if (type === 'audio') setAudioEnabled(isEnabled);
         if (type === 'video') setVideoEnabled(isEnabled);
@@ -20,7 +20,7 @@ export const useWebRTC = (socket, roomId, myId) => {
         socket?.emit('webrtc:toggle-media', { roomId, type, isEnabled });
     };
 
-    // Safely add or replace a track for all peers
+    
     const replaceTrackForPeers = (oldTrack, newTrack) => {
         Object.values(peersRef.current).forEach(peer => {
             try {
@@ -46,7 +46,7 @@ export const useWebRTC = (socket, roomId, myId) => {
                 audioTrack = stream.getAudioTracks()[0];
                 streamRef.current.addTrack(audioTrack);
 
-                // Add to existing peers
+                
                 Object.values(peersRef.current).forEach(peer => {
                     try { peer.addStream(streamRef.current); } catch (e) { }
                 });
@@ -68,7 +68,7 @@ export const useWebRTC = (socket, roomId, myId) => {
 
         let videoTrack = streamRef.current.getVideoTracks().find(t => t.label.toLowerCase().includes('screen') === false);
 
-        // If we are currently sharing screen, we should probably stop it or replace it, but let's just use regular camera.
+        
         if (!videoTrack) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -95,30 +95,30 @@ export const useWebRTC = (socket, roomId, myId) => {
         }
 
         if (screenEnabled) {
-            // Turning OFF screen share
+            
             const screenTrack = streamRef.current.getVideoTracks()[0];
             if (screenTrack) {
                 screenTrack.stop();
                 streamRef.current.removeTrack(screenTrack);
             }
-            // If they had video enabled before, it's gone now. 
+            
             updateMediaState('video', false);
             updateMediaState('screen', false);
             setVideoEnabled(false);
 
-            // Renegotiate or remove stream across peers
+            
             Object.values(peersRef.current).forEach(peer => {
                 try { if (screenTrack) peer.removeTrack(screenTrack, streamRef.current); } catch (e) { }
             });
             return;
         }
 
-        // Turning ON screen share
+        
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
             const screenTrack = stream.getVideoTracks()[0];
 
-            // Stop existing camera track if present
+            
             const existingVideo = streamRef.current.getVideoTracks()[0];
             if (existingVideo) {
                 existingVideo.stop();
@@ -138,15 +138,15 @@ export const useWebRTC = (socket, roomId, myId) => {
             };
 
             updateMediaState('screen', true);
-            updateMediaState('video', true); // Treat screen share as a video stream for UI
+            updateMediaState('video', true); 
 
         } catch (err) {
-            // User cancelled screen share picker
+            
             console.warn("Screen share cancelled", err);
         }
     };
 
-    // 2. Stop User Media
+    
     const stopMedia = useCallback(() => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(t => t.stop());
@@ -157,7 +157,7 @@ export const useWebRTC = (socket, roomId, myId) => {
         updateMediaState('video', false);
         updateMediaState('screen', false);
 
-        // Remove stream from all peers
+        
         Object.values(peersRef.current).forEach(peer => {
             try {
                 if (peer.streams[0]) peer.removeStream(peer.streams[0]);
@@ -165,7 +165,7 @@ export const useWebRTC = (socket, roomId, myId) => {
         });
     }, [socket, roomId]);
 
-    // 3. Create a Peer (Initiator)
+    
     const createPeer = useCallback((userToSignal, callerId, stream) => {
         const peer = new Peer({
             initiator: true,
@@ -189,13 +189,13 @@ export const useWebRTC = (socket, roomId, myId) => {
         });
 
         peer.on('close', () => removePeer(userToSignal));
-        // Provide a catch for errors to avoid crashing
+        
         peer.on('error', err => console.warn('Peer error:', err));
 
         return peer;
     }, [socket]);
 
-    // 4. Add a Peer (Receiver)
+    
     const addPeer = useCallback((incomingSignal, callerId, stream) => {
         const peer = new Peer({
             initiator: false,
@@ -233,21 +233,21 @@ export const useWebRTC = (socket, roomId, myId) => {
         setPeers(prev => prev.filter(p => p.peerId !== socketId));
     };
 
-    // 5. Socket Listeners for WebRTC Signaling
+    
     useEffect(() => {
         if (!socket || !myId) return;
 
-        // When someone else joins, THEY will are the user so WE initiate the call to them to establish mesh.
-        // Wait... usually the New Joiner pings everyone. Let's let the Existing users call the New joiner.
+        
+        
         const handleUserJoined = ({ user }) => {
             if (user.socketId === myId) return;
-            // We are an existing user. Let's call the new guy.
+            
             const peer = createPeer(user.socketId, myId, streamRef.current);
             peersRef.current[user.socketId] = peer;
         };
 
         const handleUserLeft = ({ users }) => {
-            // Find who left
+            
             const currentIds = users.map(u => u.socketId);
             Object.keys(peersRef.current).forEach(peerId => {
                 if (!currentIds.includes(peerId) && peerId !== myId) {
@@ -286,7 +286,7 @@ export const useWebRTC = (socket, roomId, myId) => {
         };
     }, [socket, myId, createPeer, addPeer]);
 
-    // Clean up entirely on unmount
+    
     useEffect(() => {
         return () => stopMedia();
     }, [stopMedia]);

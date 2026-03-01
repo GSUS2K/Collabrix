@@ -3,11 +3,11 @@ import { useEffect, useRef, useCallback } from 'react';
 const CURSOR_FADE = 3500;
 const LASER_FADE = 2000;
 
-// SVG cursor data URIs
-// Pencil tip is at bottom-left (1,19) — hotspot matches exactly
+
+
 const PENCIL_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpolygon points='1,19 5,15 8,18' fill='%23aaa' stroke='%23555' stroke-width='0.5'/%3E%3Ccircle cx='1.5' cy='18.5' r='1' fill='%23333'/%3E%3Cpolygon points='3,17 14,6 17,9 6,20' fill='%23FFF9C4' stroke='%23888' stroke-width='0.8'/%3E%3Crect x='12.5' y='1.5' width='5' height='4' rx='0.8' fill='%23ffb3b3' stroke='%23888' stroke-width='0.8' transform='rotate(45 15 4)'/%3E%3C/svg%3E") 1 19, crosshair`;
 
-// Laser tip at (2,2) with a dark grey pen body pointing bottom-right
+
 const LASER_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='2' cy='2' r='2' fill='%23ff4444'/%3E%3Cpolygon points='3,5 5,3 20,18 18,20' fill='%232d3436' stroke='%23636e72' stroke-width='0.5'/%3E%3Cpolygon points='9,11 11,9 13,11 11,13' fill='%23ff7675' /%3E%3C/svg%3E") 2 2, crosshair`;
 
 const ERASER_CURSOR = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='20' viewBox='0 0 24 20'%3E%3Crect x='2' y='6' width='20' height='12' rx='2' fill='%23ffeaa7' stroke='%23636e72' stroke-width='1.5'/%3E%3Crect x='2' y='6' width='8' height='12' rx='2' fill='%23fd79a8' stroke='%23636e72' stroke-width='1.5'/%3E%3C/svg%3E") 2 18, cell`;
@@ -24,11 +24,11 @@ export default function Canvas({
   const cursorsMap = useRef(new Map());
   const rafRef = useRef(null);
 
-  // Laser trail: array of {x, y, t, newStroke}
+  
   const laserPoints = useRef([]);
   const laserDown = useRef(false);
 
-  // ── Mount canvas ─────────────────────────────────────────
+  
   const setCanvas = useCallback((el) => {
     if (!el) return;
     canvasRef.current = el;
@@ -38,7 +38,7 @@ export default function Canvas({
     });
   }, [initCanvas, resizeCanvas]);
 
-  // ── Resize observer ──────────────────────────────────────
+  
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return;
@@ -47,7 +47,7 @@ export default function Canvas({
     return () => ro.disconnect();
   }, [resizeCanvas]);
 
-  // ── Remote cursors from socket ───────────────────────────
+  
   useEffect(() => {
     if (!socket) return;
     const onCursor = ({ socketId, username, color, x, y, cw, ch }) => {
@@ -61,7 +61,7 @@ export default function Canvas({
     return () => socket.off('cursor:move', onCursor);
   }, [socket]);
 
-  // ── Animation loop: remote cursors + laser trail ─────────
+  
   useEffect(() => {
     const tick = () => {
       const cc = cursorRef.current;
@@ -70,19 +70,19 @@ export default function Canvas({
         ctx.clearRect(0, 0, cc.width, cc.height);
         const now = Date.now();
 
-        // Prune old laser points
+        
         laserPoints.current = laserPoints.current.filter(p => now - p.t < LASER_FADE);
 
-        // Draw laser trail segments
+        
         if (laserPoints.current.length > 0) {
           const points = laserPoints.current;
           for (let i = 0; i < points.length; i++) {
             const p = points[i];
             const age = now - p.t;
             const alpha = Math.max(0, 1 - age / LASER_FADE);
-            if (p.newStroke || i === 0) continue; // skip start-of-stroke points as line start
+            if (p.newStroke || i === 0) continue; 
             const prev = points[i - 1];
-            if (prev.newStroke) continue; // start of new stroke — skip (will be caught at i+1)
+            if (prev.newStroke) continue; 
 
             ctx.globalAlpha = alpha;
             ctx.strokeStyle = '#FF3333';
@@ -99,7 +99,7 @@ export default function Canvas({
           ctx.shadowBlur = 0;
           ctx.globalAlpha = 1;
 
-          // Dot at the current tip (latest non-new-stroke point)
+          
           const tip = [...points].reverse().find(p => !p.newStroke) || points[points.length - 1];
           if (tip) {
             const tipAge = now - tip.t;
@@ -118,7 +118,7 @@ export default function Canvas({
           }
         }
 
-        // Draw remote cursors
+        
         cursorsMap.current.forEach((c) => {
           const age = now - c.updatedAt;
           if (age > CURSOR_FADE) return;
@@ -147,7 +147,7 @@ export default function Canvas({
     return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  // ── Size cursor canvas ───────────────────────────────────
+  
   const setCursor = useCallback((el) => {
     if (!el) return;
     cursorRef.current = el;
@@ -160,7 +160,7 @@ export default function Canvas({
     ro.observe(el.parentElement);
   }, []);
 
-  // ── Get canvas coords from event ─────────────────────────
+  
   const getCoords = (e) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
@@ -172,7 +172,7 @@ export default function Canvas({
     };
   };
 
-  // ── Mouse/touch handlers ─────────────────────────────────
+  
   const onMouseDown = useCallback((e) => {
     if (tool === 'laser') {
       laserDown.current = true;
@@ -207,7 +207,7 @@ export default function Canvas({
     }
   }, [tool, stopDrawing]);
 
-  // ── Background styles ────────────────────────────────────
+  
   const bgStyle = bg === 'blueprint'
     ? {
       background: 'linear-gradient(135deg, #0d1b2a 0%, #0a1628 100%)',

@@ -14,7 +14,7 @@ import GameMode from './GameMode';
 import MediaGallery from './MediaGallery';
 import PacmanEasterEgg from './PacmanEasterEgg';
 
-// Floating reaction component
+
 function ReactionBurst({ reactions }) {
   return (
     <>
@@ -47,7 +47,7 @@ export default function Room() {
   const [me, setMe] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [panel, setPanel] = useState('chat'); // chat | users | null
+  const [panel, setPanel] = useState('chat'); 
   const [showGame, setShowGame] = useState(false);
   const [gameLocked, setGameLocked] = useState(false);
   const [reactions, setReactions] = useState([]);
@@ -77,8 +77,8 @@ export default function Room() {
     }
   };
 
-  // 🕹️ Pac-Man easter egg: type "pacman" anywhere (not in an input, not during a game)
-  // Hide BMaC donation widget inside rooms — it's distracting during collaboration
+  
+  
   useEffect(() => {
     const style = document.createElement('style');
     style.id = 'bmc-hide-in-room';
@@ -92,7 +92,7 @@ export default function Room() {
     const handler = (e) => {
       const tag = document.activeElement?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-      if (showGame) return; // don't trigger during Skribbl
+      if (showGame) return; 
       pacmanSeqRef.current = (pacmanSeqRef.current + e.key).slice(-SEQUENCE.length);
       if (pacmanSeqRef.current === SEQUENCE) {
         setShowPacman(true);
@@ -103,14 +103,14 @@ export default function Room() {
     return () => window.removeEventListener('keydown', handler);
   }, [showGame]);
 
-  // ── Join ───────────────────────────────────────────────
+  
   useEffect(() => {
     if (!socket) return;
     const color = user?.color || '#00FFBF';
     socket.emit('room:join', { roomId, userColor: color });
   }, [socket, roomId, user]);
 
-  // ── Socket events ──────────────────────────────────────
+  
   useEffect(() => {
     if (!socket) return;
 
@@ -122,7 +122,7 @@ export default function Room() {
       setMessages(r.chatHistory || []);
       setLoading(false);
       if (r.canvasData) setTimeout(() => canvas.restoreCanvas(r.canvasData), 500);
-      // Rejoin active game if any
+      
       socket.emit('game:rejoin', { roomId, username: user?.username });
     });
 
@@ -139,7 +139,7 @@ export default function Room() {
       setUsers(u2);
     });
 
-    // Drawing
+    
     socket.on('draw:start', canvas.handleRemoteStart);
     socket.on('draw:move', canvas.handleRemoteMove);
     socket.on('draw:end', canvas.handleRemoteEnd);
@@ -149,13 +149,13 @@ export default function Room() {
     socket.on('draw:redo', ({ snapshot }) => snapshot && canvas.restoreCanvas(snapshot));
     socket.on('draw:sync_state', ({ canvasData }) => canvasData && canvas.restoreCanvas(canvasData));
 
-    // Chat
+    
     socket.on('chat:message', (msg) => setMessages(m => [...m, msg]));
 
-    // Reactions
+    
     socket.on('reaction:show', ({ emoji, x, y, username: u }) => {
       const id = Date.now() + Math.random();
-      // Clamp coordinates to keep emojis on screen (prevents overflow spawning)
+      
       const safeX = Math.max(10, Math.min(x, 90));
       const safeY = Math.max(10, Math.min(y, 90));
 
@@ -163,20 +163,20 @@ export default function Room() {
       setTimeout(() => setReactions(r => r.filter(rx => rx.id !== id)), 2500);
     });
 
-    // Settings
+    
     socket.on('settings:updated', ({ settings }) => {
       setRoom(r => ({ ...r, settings }));
     });
 
     socket.on('error', ({ message }) => toast.error(message));
 
-    // Auto-open game panel when game starts or rejoining mid-game
+    
     const openGame = () => setShowGame(true);
     socket.on('game:started', openGame);
     socket.on('game:choosing', openGame);
     socket.on('game:sync', openGame);
 
-    // Canvas background sync from peers
+    
     socket.on('room:set_background', ({ bg: newBg }) => canvas.setBg(newBg));
 
     return () => {
@@ -189,7 +189,7 @@ export default function Room() {
     };
   }, [socket, canvas, me, roomId, user?.username]);
 
-  // ── Auto save ──────────────────────────────────────────
+  
   useEffect(() => {
     saveTimer.current = setInterval(() => {
       if (!room) return;
@@ -199,7 +199,7 @@ export default function Room() {
     return () => clearInterval(saveTimer.current);
   }, [room, socket, roomId, canvas]);
 
-  // ── Leave ──────────────────────────────────────────────
+  
   const leave = useCallback(() => {
     const data = canvas.getDataUrl();
     socket?.emit('canvas:save', { roomId, canvasData: data });
@@ -207,7 +207,7 @@ export default function Room() {
     navigate('/dashboard');
   }, [socket, canvas, roomId, navigate]);
 
-  // ── Copy code ──────────────────────────────────────────
+  
   const copyCode = () => {
     navigator.clipboard.writeText(room?.code || '');
     toast.success('Room code copied!');
@@ -224,10 +224,10 @@ export default function Room() {
 
   return (
     <div className="flex flex-col h-screen bg-[#111117] overflow-hidden">
-      {/* ── Top bar ─────────────────────────────────────── */}
+      {}
       <header className="h-[60px] flex-shrink-0 flex items-center justify-between px-4 bg-brand-dark/80 backdrop-blur-md border-b border-white/5 z-20">
 
-        {/* Left: Leave, Logo, Name, Code */}
+        {}
         <div className="flex items-center gap-3 select-none">
           <button
             className="w-9 h-9 flex items-center justify-center rounded-lg text-white/50 hover:bg-white/10 hover:text-white transition-all outline-none"
@@ -239,7 +239,7 @@ export default function Room() {
             </svg>
           </button>
 
-          {/* Logo with Easter Egg */}
+          {}
           <div
             className="flex items-center justify-center w-9 h-9 bg-brand-accent/10 rounded-xl border border-brand-accent/20 cursor-pointer group hover:bg-brand-accent/20 hover:scale-110 transition-all shadow-[0_0_10px_rgba(0,255,191,0.1)] mr-2"
             onClick={handleLogoClick}
@@ -273,7 +273,7 @@ export default function Room() {
           />
         </div>
 
-        {/* Center: Avatars & Voice/Video Toggles */}
+        {}
         <div className="hidden md:flex items-center justify-center gap-4">
           <div className="flex items-center -space-x-2">
             {users.slice(0, 6).map(u => (
@@ -295,7 +295,7 @@ export default function Room() {
 
           <div className="w-px h-5 bg-white/10" />
 
-          {/* WebRTC Controls */}
+          {}
           <div className="flex items-center gap-2">
             <button
               onClick={webrtc.toggleAudio}
@@ -329,9 +329,9 @@ export default function Room() {
           </div>
         </div>
 
-        {/* Right: Toggles */}
+        {}
         <div className="flex items-center gap-2">
-          {/* Game Toggle */}
+          {}
           <button
             className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-sm font-bold transition-all border ${showGame
               ? 'bg-brand-purple text-white border-brand-purple shadow-[0_0_15px_rgba(162,155,254,0.3)]'
@@ -346,7 +346,7 @@ export default function Room() {
 
           <div className="w-px h-6 bg-white/10 mx-1" />
 
-          {/* Users Panel Toggle */}
+          {}
           <button
             className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${panel === 'users' ? 'bg-brand-accent/15 text-brand-accent' : 'text-white/50 hover:bg-white/10 hover:text-white'
               }`}
@@ -360,7 +360,7 @@ export default function Room() {
             </svg>
           </button>
 
-          {/* Chat Panel Toggle */}
+          {}
           <button
             className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all ${panel === 'chat' ? 'bg-brand-accent/15 text-brand-accent' : 'text-white/50 hover:bg-white/10 hover:text-white'
               }`}
@@ -374,19 +374,19 @@ export default function Room() {
         </div>
       </header>
 
-      {/* ── Main Layout (Canvas + Sidebar) ──────────────── */}
+      {}
       <div className="flex flex-1 overflow-hidden relative">
 
-        {/* Toolbar */}
+        {}
         <div className="absolute left-4 top-4 z-20">
           <Toolbar {...canvas} socket={socket} roomId={roomId} />
         </div>
 
-        {/* Canvas Wrap */}
+        {}
         <div className="flex-1 relative cursor-crosshair">
           <Canvas {...canvas} socket={socket} roomId={roomId} />
 
-          {/* Skribbl Game Overlay */}
+          {}
           {showGame && (
             <GameMode
               socket={socket}
@@ -398,16 +398,16 @@ export default function Room() {
             />
           )}
 
-          {/* Reaction Burst */}
+          {}
           <ReactionBurst reactions={reactions} />
 
-          {/* 🕹️ Easter egg */}
+          {}
           {showPacman && <PacmanEasterEgg onClose={() => setShowPacman(false)} />}
 
-          {/* WebRTC Video/Audio Gallery — needs pointer-events-auto, outside the restrictions */}
+          {}
         </div>
 
-        {/* WebRTC Media overlays — pointer-events-none shell, component handles its own interactions */}
+        {}
         <div className="absolute inset-0 z-30 pointer-events-none">
           <MediaGallery
             localStream={webrtc.localStream}
@@ -417,7 +417,7 @@ export default function Room() {
           />
         </div>
 
-        {/* Side Panels */}
+        {}
         {panel && (
           <div className="w-[320px] h-full flex-shrink-0 overflow-hidden border-l border-white/5 bg-brand-dark/95 backdrop-blur-xl relative z-10 shadow-[-10px_0_30px_rgba(0,0,0,0.5)] animate-[slideInRight_0.3s_cubic-bezier(0.4,0,0.2,1)]">
             {panel === 'chat' && (

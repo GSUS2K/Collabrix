@@ -10,10 +10,10 @@ import { initGA, logPageView } from './utils/analytics';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 
-// Initialize GA outside the component tree
+
 initGA();
 
-// Helper component to track page views
+
 const AnalyticsTracker = () => {
   const location = useLocation();
 
@@ -24,7 +24,7 @@ const AnalyticsTracker = () => {
   return null;
 };
 
-// Use env variable or fallback for development
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy_client_id_for_now';
 
 const PrivateRoute = ({ children }) => {

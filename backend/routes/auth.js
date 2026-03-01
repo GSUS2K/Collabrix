@@ -5,7 +5,7 @@ const { protect } = require('../middleware/auth');
 
 const sign = (id, username, color) => jwt.sign({ id, username, color }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
-// POST /api/auth/register
+
 router.post('/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -28,7 +28,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// POST /api/auth/google
+
 const { OAuth2Client } = require('google-auth-library');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -54,7 +54,7 @@ router.post('/google', async (req, res) => {
     const { credential } = req.body;
     if (!credential) return res.status(400).json({ message: 'Google credential missing' });
 
-    // Verify the Google token
+    
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -63,22 +63,22 @@ router.post('/google', async (req, res) => {
     const payload = ticket.getPayload();
     const { sub: googleId, email, name, picture } = payload;
 
-    // Check if user exists by Google ID first, then by Email
+    
     let user = await User.findOne({ $or: [{ googleId }, { email }] });
 
     if (user) {
-      // If user exists but doesn't have a googleId (signed up via email), link it
+      
       if (!user.googleId) {
         user.googleId = googleId;
-        user.avatarUrl = user.avatarUrl || picture; // don't overwrite if they set one
+        user.avatarUrl = user.avatarUrl || picture; 
         await user.save();
       }
     } else {
-      // Create a brand new Google User
+      
       const colors = ['#00FFBF', '#FF6B6B', '#4ECDC4', '#FFE66D', '#A29BFE', '#FD79A8', '#6C5CE7', '#00CEC9'];
       const color = colors[Math.floor(Math.random() * colors.length)];
 
-      // We need a unique username, Google 'name' might conflict
+      
       let baseUsername = name.replace(/[^a-zA-Z0-9]/g, '').slice(0, 15) || 'User';
       let uniqueUsername = baseUsername;
       let counter = 1;
@@ -106,7 +106,7 @@ router.post('/google', async (req, res) => {
   }
 });
 
-// GET /api/auth/me
+
 router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');

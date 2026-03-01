@@ -7,7 +7,7 @@ const AMOUNTS = [
 ];
 
 const DonationModal = ({ isOpen, onClose }) => {
-    const [selected, setSelected] = useState(1); // default $3
+    const [selected, setSelected] = useState(1); 
     const [custom, setCustom] = useState('');
     const [animOut, setAnimOut] = useState(false);
 
@@ -29,7 +29,7 @@ const DonationModal = ({ isOpen, onClose }) => {
     const finalAmount = custom ? parseFloat(custom) || 0 : AMOUNTS[selected].usd;
 
     const handleDonate = () => {
-        // BMaC supports prefilling amount via /support URL
+        
         const url = `https://www.buymeacoffee.com/gsus2k`;
         window.open(url, '_blank', 'noopener,noreferrer');
     };
@@ -38,22 +38,22 @@ const DonationModal = ({ isOpen, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-            {/* Backdrop */}
+            {}
             <div
                 className="absolute inset-0 bg-black/70 backdrop-blur-md"
                 onClick={handleClose}
             />
 
-            {/* Modal */}
+            {}
             <div
                 className={`relative w-full max-w-[400px] rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.8)] border border-white/10 flex flex-col
           ${animOut ? 'animate-[slideOutDown_0.22s_ease-in_forwards]' : 'animate-[slideInUp_0.35s_cubic-bezier(0.16,1,0.3,1)]'}`}
                 style={{ background: 'linear-gradient(160deg, #12141a 0%, #0d0f14 100%)' }}
             >
-                {/* Top gradient line */}
+                {}
                 <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#00FFBF]/40 to-transparent" />
 
-                {/* Close */}
+                {}
                 <button
                     onClick={handleClose}
                     className="absolute top-4 right-4 z-10 p-1.5 bg-white/5 hover:bg-white/10 text-white/40 hover:text-white rounded-full border border-white/10 transition-all hover:scale-110"
@@ -64,7 +64,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                     </svg>
                 </button>
 
-                {/* Header */}
+                {}
                 <div className="px-8 pt-9 pb-6 flex flex-col items-center border-b border-white/[0.06]">
                     <div className="w-16 h-16 rounded-2xl bg-[#00FFBF]/10 border border-[#00FFBF]/20 flex items-center justify-center text-3xl mb-4
               shadow-[0_0_30px_rgba(0,255,191,0.15)] animate-[pulse_3s_ease-in-out_infinite]">
@@ -76,7 +76,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                     </p>
                 </div>
 
-                {/* Amount Picker */}
+                {}
                 <div className="px-8 py-6 flex flex-col gap-4">
                     <p className="text-[10px] font-black text-white/30 uppercase tracking-widest">Pick an amount</p>
 
@@ -100,7 +100,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                         ))}
                     </div>
 
-                    {/* Custom Amount */}
+                    {}
                     <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 text-sm font-bold">$</span>
                         <input
@@ -115,7 +115,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                         />
                     </div>
 
-                    {/* CTA */}
+                    {}
                     <button
                         onClick={handleDonate}
                         disabled={finalAmount <= 0}
@@ -133,7 +133,7 @@ const DonationModal = ({ isOpen, onClose }) => {
                     </p>
                 </div>
 
-                {/* Bottom gradient line */}
+                {}
                 <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent" />
             </div>
 

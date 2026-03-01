@@ -2,7 +2,7 @@ const { socketAuth } = require('../middleware/auth');
 const { initGameSocket } = require('./game');
 const Room = require('../models/Room');
 
-// roomId -> Map(socketId -> userInfo)
+
 const roomUsers = new Map();
 
 const initSocket = (io) => {
@@ -11,7 +11,7 @@ const initSocket = (io) => {
   io.on('connection', (socket) => {
     const { id: userId, username = 'User', color = '#00FFBF' } = socket.user;
 
-    // ── Join Room ───────────────────────────────────────────
+    
     socket.on('room:join', async ({ roomId, userColor }) => {
       try {
         socket.join(roomId);
@@ -21,11 +21,11 @@ const initSocket = (io) => {
         const users = roomUsers.get(roomId);
         users.set(socket.id, { socketId: socket.id, username, color: userColor || color, isHost: false });
 
-        // Load room from DB
+        
         const room = await Room.findById(roomId);
         if (!room) return socket.emit('error', { message: 'Room not found' });
 
-        // Mark host
+        
         const userEntry = users.get(socket.id);
         if (room.host.toString() === userId) userEntry.isHost = true;
         users.set(socket.id, userEntry);
@@ -51,18 +51,18 @@ const initSocket = (io) => {
           users: userList,
         });
 
-        // Update lastActive
+        
         await Room.findByIdAndUpdate(roomId, { lastActive: new Date() });
       } catch (err) {
         socket.emit('error', { message: err.message });
       }
     });
 
-    // ── Leave Room ──────────────────────────────────────────
+    
     socket.on('room:leave', () => handleLeave(socket, io));
     socket.on('disconnect', () => handleLeave(socket, io));
 
-    // ── Drawing ─────────────────────────────────────────────
+    
     socket.on('draw:start', (data) => socket.to(data.roomId).emit('draw:start', data));
     socket.on('draw:move', (data) => socket.to(data.roomId).emit('draw:move', data));
     socket.on('draw:end', (data) => socket.to(data.roomId).emit('draw:end', data));
@@ -79,22 +79,22 @@ const initSocket = (io) => {
       socket.to(roomId).emit('draw:redo', { snapshot });
     });
 
-    // Canvas sync to late joiners
+    
     socket.on('draw:sync', ({ roomId, canvasData }) => {
       socket.to(roomId).emit('draw:sync_state', { canvasData });
     });
 
-    // Auto-save canvas
+    
     socket.on('canvas:save', async ({ roomId, canvasData }) => {
       try {
         await Room.findByIdAndUpdate(roomId, { canvasData, lastActive: new Date() });
       } catch { }
     });
 
-    // ── Cursor ──────────────────────────────────────────────
+    
     socket.on('cursor:move', (data) => socket.to(data.roomId).emit('cursor:move', data));
 
-    // ── Chat ────────────────────────────────────────────────
+    
     socket.on('chat:send', async ({ roomId, text }) => {
       if (!text?.trim()) return;
       const users = roomUsers.get(roomId);
@@ -107,7 +107,7 @@ const initSocket = (io) => {
         timestamp: new Date(),
       };
       io.to(roomId).emit('chat:message', msg);
-      // Persist last 100 messages
+      
       try {
         await Room.findByIdAndUpdate(roomId, {
           $push: { chatHistory: { $each: [msg], $slice: -100 } },
@@ -115,7 +115,7 @@ const initSocket = (io) => {
       } catch { }
     });
 
-    // ── Sticky Notes ────────────────────────────────────────
+    
     socket.on('note:add', async ({ roomId, note }) => {
       socket.to(roomId).emit('note:add', { note });
       try { await Room.findByIdAndUpdate(roomId, { $push: { stickyNotes: note } }); } catch { }
@@ -136,12 +136,12 @@ const initSocket = (io) => {
       try { await Room.findByIdAndUpdate(roomId, { $pull: { stickyNotes: { id: noteId } } }); } catch { }
     });
 
-    // ── Reactions ───────────────────────────────────────────
+    
     socket.on('reaction:send', ({ roomId, emoji, x, y }) => {
       io.to(roomId).emit('reaction:show', { emoji, x, y, username });
     });
 
-    // ── Settings ────────────────────────────────────────────
+    
     socket.on('settings:update', async ({ roomId, settings }) => {
       const users = roomUsers.get(roomId);
       const user = users?.get(socket.id);
@@ -150,14 +150,14 @@ const initSocket = (io) => {
       try { await Room.findByIdAndUpdate(roomId, { settings }); } catch { }
     });
 
-    // ── WebRTC Signaling (Mesh Network) ─────────────────────
+    
     socket.on('webrtc:offer', ({ target, caller, sdp }) => {
-      // Send offer to the specific target socket
+      
       io.to(target).emit('webrtc:offer', { caller, sdp });
     });
 
     socket.on('webrtc:answer', ({ target, caller, sdp }) => {
-      // Send answer back to the original caller
+      
       io.to(target).emit('webrtc:answer', { caller, sdp });
     });
 
@@ -166,7 +166,7 @@ const initSocket = (io) => {
     });
 
     socket.on('webrtc:toggle-media', ({ roomId, type, isEnabled }) => {
-      // type: 'audio' | 'video'
+      
       socket.to(roomId).emit('webrtc:user-toggled-media', {
         socketId: socket.id,
         type,
@@ -174,7 +174,7 @@ const initSocket = (io) => {
       });
     });
 
-    // ── Game ────────────────────────────────────────────────
+    
     initGameSocket(io, socket, roomUsers);
   });
 };

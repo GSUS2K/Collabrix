@@ -59,7 +59,7 @@ export default function Toolbar({
   const handleBgChange = (id) => {
     setBg(id);
     setShowBg(false);
-    // Sync background with room peers
+    
     if (socket && roomId) {
       socket.emit('room:set_background', { roomId, bg: id });
     }
@@ -68,7 +68,7 @@ export default function Toolbar({
   return (
     <aside className="w-16 bg-brand-card/90 backdrop-blur-xl border border-white/10 rounded-2xl flex flex-col items-center py-4 gap-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] z-30 max-h-[calc(100vh-100px)] overflow-y-auto overflow-x-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
-      {/* Tools */}
+      {}
       {TOOLS.map((t, i) =>
         t.separator ? (
           <div key={i} className="w-8 h-px bg-white/10 my-1 flex-shrink-0" />
@@ -83,7 +83,7 @@ export default function Toolbar({
             title={t.label}
           >
             <span>{t.icon}</span>
-            {/* Tooltip */}
+            {}
             <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-[60]">
               {t.label}
             </span>
@@ -93,7 +93,7 @@ export default function Toolbar({
 
       <div className="w-8 h-px bg-white/10 my-1 flex-shrink-0" />
 
-      {/* Undo / Redo */}
+      {}
       <button className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative" onClick={undo} title="Undo">
         <span>↩</span>
         <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-[60]">Undo</span>
@@ -109,7 +109,7 @@ export default function Toolbar({
 
       <div className="w-8 h-px bg-white/10 my-1 flex-shrink-0" />
 
-      {/* Size */}
+      {}
       <div className="w-10 py-2 flex-shrink-0 bg-black/20 rounded-xl flex flex-col items-center gap-2 border border-white/5">
         {SIZES.map(s => (
           <button
@@ -125,7 +125,7 @@ export default function Toolbar({
 
       <div className="w-8 h-px bg-white/10 my-1 flex-shrink-0" />
 
-      {/* Color swatches */}
+      {}
       <div className="grid grid-cols-2 gap-1.5 w-10 flex-shrink-0">
         {COLORS.map(c => (
           <button
@@ -135,7 +135,7 @@ export default function Toolbar({
             onClick={() => handleColorPick(c)}
           />
         ))}
-        {/* Custom color */}
+        {}
         <label className="w-4 h-4 rounded-full bg-[conic-gradient(red,yellow,green,cyan,blue,magenta,red)] flex items-center justify-center cursor-pointer hover:scale-110 transition-transform relative" title="Custom color">
           <input
             type="color"
@@ -148,7 +148,7 @@ export default function Toolbar({
 
       <div className="w-8 h-px bg-white/10 my-1 flex-shrink-0" />
 
-      {/* Background */}
+      {}
       <div className="relative flex-shrink-0">
         <button
           className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg transition-all group relative ${bg !== 'blank' ? 'text-brand-accent bg-brand-accent/10 border border-brand-accent/20' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
@@ -177,7 +177,7 @@ export default function Toolbar({
         )}
       </div>
 
-      {/* Export */}
+      {}
       <button className="w-10 h-10 flex-shrink-0 rounded-xl flex items-center justify-center text-lg text-white/60 hover:bg-white/10 hover:text-white transition-all group relative mt-auto" onClick={exportPNG} title="Export PNG">
         <span>📤</span>
         <span className="absolute left-14 top-1/2 -translate-y-1/2 bg-brand-dark border border-white/10 text-white text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-[60]">Export PNG</span>

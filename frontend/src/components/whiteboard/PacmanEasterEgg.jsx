@@ -9,7 +9,7 @@ export default function PacmanEasterEgg({ onClose }) {
                 style={{ width: 600, height: 520 }}
                 onClick={e => e.stopPropagation()}
             >
-                {/* Header */}
+                {}
                 <div className="flex items-center justify-between px-5 py-3 bg-black border-b border-brand-yellow/20">
                     <div className="flex items-center gap-3">
                         <span className="text-2xl animate-[pulse_0.8s_steps(1)_infinite]">👾</span>
@@ -26,7 +26,7 @@ export default function PacmanEasterEgg({ onClose }) {
                     </button>
                 </div>
 
-                {/* Game iframe */}
+                {}
                 <iframe
                     src="https://freepacman.org/"
                     title="Pac-Man Easter Egg"
@@ -37,7 +37,7 @@ export default function PacmanEasterEgg({ onClose }) {
                 />
             </div>
 
-            {/* Close hint */}
+            {}
             <p className="absolute bottom-6 text-white/25 text-xs font-medium tracking-wider animate-[pulse_3s_infinite]">
                 Press <kbd className="px-1.5 py-0.5 bg-white/10 rounded text-white/40 text-[10px] font-mono border border-white/10">Esc</kbd> or click outside to close
             </p>

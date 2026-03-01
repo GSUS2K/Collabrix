@@ -48,7 +48,7 @@ export default function UserList({ users, mySocketId, isHost, socket, roomId }) 
               style={{ background: u.color || '#00FFBF', boxShadow: `0 0 8px ${u.color || '#00FFBF'}80` }}
             />
 
-            {/* Kick button for hosts */}
+            {}
             {isHost && u.socketId !== mySocketId && (
               <button
                 className="opacity-0 group-hover:opacity-100 absolute right-6 w-7 h-7 flex items-center justify-center bg-brand-red text-white text-xs rounded-lg hover:scale-110 transition-all shadow-lg"

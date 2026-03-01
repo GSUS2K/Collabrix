@@ -32,12 +32,12 @@ function MediaCell({ stream, isLocal, username }) {
                     <div className="text-base font-bold text-white">
                         {(username || '?')[0].toUpperCase()}
                     </div>
-                    {/* Audio pulse ring */}
+                    {}
                     <div className="absolute inset-0 rounded-full border-2 border-brand-accent/50 animate-[ping_2s_ease-out_infinite] opacity-60" />
                 </>
             )}
 
-            {/* Name tag */}
+            {}
             {hasVideo && (
                 <div className="absolute bottom-1 left-2 text-[10px] font-bold text-white/80 bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm">
                     {username || 'User'}{isLocal ? ' (You)' : ''}
@@ -102,7 +102,7 @@ export default function MediaGallery({ localStream, peers, users, myUsername }) 
                 className="absolute top-0 left-0 pointer-events-auto z-40 bg-brand-card/85 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl select-none"
                 style={{ width: size.w, height: minimized ? 'auto' : size.h }}
             >
-                {/* Header / Drag Handle */}
+                {}
                 <div className="media-drag-handle flex items-center justify-between px-3 py-2 bg-white/5 border-b border-white/8 cursor-grab active:cursor-grabbing">
                     <div className="flex items-center gap-2">
                         <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">📹 Live</span>
@@ -111,13 +111,13 @@ export default function MediaGallery({ localStream, peers, users, myUsername }) 
                         )}
                     </div>
                     <div className="flex items-center gap-1.5">
-                        {/* Minimize/expand */}
+                        {}
                         <button
                             className="w-3.5 h-3.5 rounded-full bg-brand-yellow/70 hover:bg-brand-yellow transition-colors flex items-center justify-center"
                             onClick={(e) => { e.stopPropagation(); setMinimized(m => !m); }}
                             title={minimized ? 'Expand' : 'Minimize'}
                         />
-                        {/* Red close dot (just minimizes, not closes since streams are controlled from header) */}
+                        {}
                         <button
                             className="w-3.5 h-3.5 rounded-full bg-brand-red/70 hover:bg-brand-red transition-colors"
                             onClick={(e) => { e.stopPropagation(); setMinimized(true); }}
@@ -126,7 +126,7 @@ export default function MediaGallery({ localStream, peers, users, myUsername }) 
                     </div>
                 </div>
 
-                {/* Video grid */}
+                {}
                 {!minimized && (
                     <div className={`w-full overflow-hidden ${allStreams.length === 1 ? 'h-[calc(100%-36px)]' : 'grid gap-1.5 p-1.5'}`}
                         style={allStreams.length > 1 ? {
@@ -140,7 +140,7 @@ export default function MediaGallery({ localStream, peers, users, myUsername }) 
                     </div>
                 )}
 
-                {/* Resize handle (bottom-right corner) */}
+                {}
                 {!minimized && (
                     <div
                         className="absolute bottom-0 right-0 w-5 h-5 cursor-se-resize z-50 flex items-end justify-end pb-0.5 pr-0.5"

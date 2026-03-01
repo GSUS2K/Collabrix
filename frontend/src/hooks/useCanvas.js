@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import toast from 'react-hot-toast';
 
-// ── Flood fill ─────────────────────────────────────────────
+
 function floodFill(ctx, sx, sy, fillHex) {
   const canvas = ctx.canvas;
   const w = canvas.width, h = canvas.height;
@@ -52,7 +52,7 @@ function floodFill(ctx, sx, sy, fillHex) {
   ctx.putImageData(img, 0, 0);
 }
 
-// ── Arrow helper ──────────────────────────────────────────
+
 function drawArrow(ctx, x1, y1, x2, y2) {
   const angle = Math.atan2(y2 - y1, x2 - x1);
   const len = 14;
@@ -68,7 +68,7 @@ function drawArrow(ctx, x1, y1, x2, y2) {
   ctx.fill();
 }
 
-// ── Diamond helper ────────────────────────────────────────
+
 function drawDiamond(ctx, x1, y1, x2, y2) {
   const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2;
   const hw = Math.abs(x2 - x1) / 2, hh = Math.abs(y2 - y1) / 2;
@@ -81,7 +81,7 @@ function drawDiamond(ctx, x1, y1, x2, y2) {
   ctx.stroke();
 }
 
-// ── Triangle helper ───────────────────────────────────────
+
 function drawTriangle(ctx, x1, y1, x2, y2) {
   ctx.beginPath();
   ctx.moveTo((x1 + x2) / 2, y1);
@@ -100,7 +100,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
   const snapshotRef = useRef(null);
   const historyRef = useRef([]);
   const histIdxRef = useRef(-1);
-  const remoteRef = useRef(new Map()); // socketId -> {isDrawing, lastPos, snapshot}
+  const remoteRef = useRef(new Map()); 
   const textInputRef = useRef(null);
   const strokeCountRef = useRef(0);
 
@@ -121,7 +121,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
   useEffect(() => { sizeRef.current = size; }, [size]);
   useEffect(() => { rainbowRef.current = rainbowMode; }, [rainbowMode]);
 
-  // ── Init ────────────────────────────────────────────────
+  
   const initCanvas = useCallback((canvas) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -131,22 +131,22 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     canvasRef.current = canvas;
   }, []);
 
-  // ── History ─────────────────────────────────────────────
+  
   const saveHistory = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || canvas.width === 0 || canvas.height === 0) return;
     const snap = canvas.toDataURL();
 
-    // If the new snapshot is identical to the current one, don't save a duplicate
+    
     if (histIdxRef.current >= 0 && historyRef.current[histIdxRef.current] === snap) return;
 
-    // Trim redo stack
+    
     historyRef.current = historyRef.current.slice(0, histIdxRef.current + 1);
     historyRef.current.push(snap);
     if (historyRef.current.length > 40) historyRef.current.shift();
     histIdxRef.current = historyRef.current.length - 1;
 
-    // Easter egg: stroke count
+    
     strokeCountRef.current++;
     if (strokeCountRef.current === 1000) {
       toast('🎨 Picasso mode unlocked — 1000 strokes!', { duration: 4000 });
@@ -175,7 +175,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
       ctx.fillRect(0, 0, width, height);
     }
 
-    // Save initial state to history so undo/redo works
+    
     if (historyRef.current.length === 0) {
       saveHistory();
     }
@@ -189,7 +189,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     if (!canvas || !ctx || !dataUrl) return;
     const img = new Image();
     img.onload = () => {
-      // Clear before drawing
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
     };
@@ -217,7 +217,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     const ctx = ctxRef.current;
     if (!canvas || !ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    saveHistory(); // Immediately saves the blank state
+    saveHistory(); 
     if (emit) socket?.emit('draw:clear', { roomId });
   }, [socket, roomId, saveHistory]);
 
@@ -227,7 +227,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     return canvas.toDataURL();
   }, []);
 
-  // ── Coords ──────────────────────────────────────────────
+  
   const getPos = (e, canvas) => {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -239,7 +239,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     };
   };
 
-  // ── Apply ctx settings ───────────────────────────────────
+  
   const applyCtx = (ctx, c, s, composite = 'source-over') => {
     ctx.strokeStyle = c;
     ctx.fillStyle = c;
@@ -247,12 +247,12 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     ctx.globalCompositeOperation = composite;
   };
 
-  // ── Shape drawing ────────────────────────────────────────
+  
   const drawShape = (ctx, t, x1, y1, x2, y2, snap, c, s) => {
     if (snap) ctx.putImageData(snap, 0, 0);
     applyCtx(ctx, c, s);
 
-    const shiftHeld = false; // could add shift key support
+    const shiftHeld = false; 
     switch (t) {
       case 'line':
         ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
@@ -280,7 +280,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
 
   const isShapeTool = (t) => ['line', 'arrow', 'rect', 'circle', 'diamond', 'triangle'].includes(t);
 
-  // ── Mouse events ─────────────────────────────────────────
+  
   const startDrawing = useCallback((e) => {
     if (!canDraw) return;
     const canvas = canvasRef.current;
@@ -319,7 +319,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
         snapshotRef.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
       }
     } else {
-      // Pencil / eraser — draw immediate dot
+      
       applyCtx(ctx, c, s, t === 'eraser' ? 'destination-out' : 'source-over');
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, s / 2, 0, Math.PI * 2);
@@ -359,7 +359,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     lastPosRef.current = pos;
     socket?.emit('draw:move', { roomId, x: pos.x, y: pos.y, tool: t, color: c, size: s });
 
-    // Cursor emit
+    
     socket?.emit('cursor:move', {
       roomId, x: pos.x, y: pos.y,
       cw: canvas.width, ch: canvas.height,
@@ -375,7 +375,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     ctxRef.current && (ctxRef.current.globalCompositeOperation = 'source-over');
   }, [socket, roomId, saveHistory]);
 
-  // ── Text input ──────────────────────────────────────────
+  
   const showTextInput = (x, y, canvas, ctx, c, s) => {
     const existing = document.getElementById('canvas-text-input');
     if (existing) existing.remove();
@@ -416,7 +416,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     input.addEventListener('blur', commit);
   };
 
-  // ── Remote drawing ──────────────────────────────────────
+  
   const handleRemoteStart = useCallback(({ socketId, x, y, tool, color, size }) => {
     const ctx = ctxRef.current;
     if (!ctx) return;
@@ -474,13 +474,13 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     ctx.fillText(text, x, y);
   }, []);
 
-  // ── Keyboard shortcuts ───────────────────────────────────
+  
   useEffect(() => {
     const onKey = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
       if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
-      // Tool shortcuts
+      
       const shortcuts = { p: 'pencil', e: 'eraser', l: 'line', r: 'rect', c: 'circle', a: 'arrow', f: 'fill', t: 'text' };
       if (shortcuts[e.key] && !e.ctrlKey && !e.metaKey) setTool(shortcuts[e.key]);
     };
@@ -488,7 +488,7 @@ export const useCanvas = ({ socket, roomId, canDraw = true }) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo]);
 
-  // ── Konami code easter egg ───────────────────────────────
+  
   useEffect(() => {
     const code = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
     let pos = 0;
