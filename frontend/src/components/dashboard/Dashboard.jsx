@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import Spline from '@splinetool/react-spline';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -159,10 +160,21 @@ export default function Dashboard() {
   return (
     <div className="relative min-h-screen bg-brand-dark text-white font-sans flex flex-col">
       { }
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      { }
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
+        <Spline
+          scene="https://prod.spline.design/xwqDYBialmxhQV28/scene.splinecode"
+          style={{ width: '100%', height: '100%' }}
+        />
+      </div>
+
+      { }
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-20%] right-[-10%] w-[700px] h-[700px] bg-brand-accent/15 rounded-full blur-[130px] animate-[pulse_9s_infinite]" />
         <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-brand-purple/15 rounded-full blur-[110px] animate-[pulse_11s_infinite_3s]" />
       </div>
+
+      <div className="fixed inset-0 z-0 pointer-events-none bg-brand-dark/20 backdrop-blur-[2px]" />
 
       { }
       <header className="relative flex justify-between items-center px-6 py-4 md:px-12 backdrop-blur-md border-b border-white/5 bg-brand-dark/50 z-10 flex-shrink-0">
